@@ -51,7 +51,7 @@ class NewsletterSubscriberController extends Controller
 
     public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResponse
     {
-         set_time_limit(300);
+        set_time_limit(300);
         if (! Schema::hasTable('newsletter_subscribers')) {
             return back()->with('error', 'Newsletter subscriber table is unavailable.')->withInput();
         }
@@ -61,49 +61,88 @@ class NewsletterSubscriberController extends Controller
 
         $recipientQuery = NewsletterSubscriber::query();
 
-if ($recipientMode === 'selected') {
-    $recipientQuery->whereIn('id', $validated['subscriber_ids'] ?? []);
-}
+        if ($recipientMode === 'selected') {
+            $recipientQuery->whereIn('id', $validated['subscriber_ids'] ?? []);
+        }
 
-    if (!empty($validated['test_session_id'])) {
+        if (!empty($validated['test_session_id'])) {
 
-$participantIds = FitnessResult::where('test_session_id', $validated['test_session_id'])
-    ->distinct()
-    ->pluck('participant_id');
+        $participantIds = FitnessResult::where('test_session_id', $validated['test_session_id'])
+            ->distinct()
+            ->pluck('participant_id');
 
-$recipients = Participant::whereIn('id', $participantIds)
-    ->get()
-    ->map(function ($participant) {
+        Log::info('Raw participant emails', [
+            'participants' => Participant::whereIn('id', $participantIds)
+                ->pluck('email')
+                ->toArray(),
+        ]);
 
-        return [
-            'id' => $participant->id,
-            'name' => $participant->full_name,
-            'email' => strtolower(trim($participant->email)),
-        ];
-    })
-    ->filter(function ($participant) {
+        $recipients = Participant::whereIn('id', $participantIds)
+            ->get()
+            ->map(function ($participant) {
 
-    if (empty($participant['email'])) {
-        return false;
-    }
+                return [
+                    'id' => $participant->id,
+                    'name' => $participant->full_name,
+                    'email' => strtolower(trim($participant->email)),
+                ];     
+            })
+            ->filter(function ($participant) {
 
-    if (str_contains($participant['email'], '@example.com')) {
-        return false;
-    }
+            if (empty($participant['email'])) {
+                return false;
+            }
 
-    return filter_var($participant['email'], FILTER_VALIDATE_EMAIL);
-})
-    ->unique('email')
-    ->values();
-    } else {
+            $email = strtolower(trim($participant['email']));
 
-    $recipients = $recipientQuery
-        ->orderBy('id')
-        ->get(['id', 'name', 'email'])
-        ->filter(fn (NewsletterSubscriber $subscriber): bool => filter_var($subscriber->email, FILTER_VALIDATE_EMAIL) !== false)
-        ->unique('email')
-        ->values();
-}
+            if (
+                str_ends_with($email, '@example.com') ||
+                str_ends_with($email, '@example.org') ||
+                str_ends_with($email, '@example.net')
+            ) {
+                return false;
+            }
+
+            return filter_var($participant['email'], FILTER_VALIDATE_EMAIL);
+        })
+            ->unique('email')
+            ->values();
+
+         } else {
+
+        $recipients = $recipientQuery
+            ->orderBy('id')
+            ->get(['id', 'name', 'email'])
+            ->map(function ($subscriber) {
+                return [
+                    'id' => $subscriber->id,
+                    'name' => $subscriber->name,
+                    'email' => strtolower(trim($subscriber->email)),
+                ];
+            })
+            ->filter(function ($subscriber) {
+
+                $email = $subscriber['email'];
+
+
+                if (
+                    str_ends_with($email, '@example.com') ||
+                    str_ends_with($email, '@example.org') ||
+                    str_ends_with($email, '@example.net')
+                ) {
+                    return false;
+                }
+
+                return filter_var($email, FILTER_VALIDATE_EMAIL);
+            })
+             ->unique('email')
+             ->values();
+            
+          }
+
+          Log::info('Recipients', [
+                'recipients' => $recipients->pluck('email')->toArray(),
+            ]);
 
         if ($recipients->isEmpty()) {
             return back()->with('error', 'No subscribers matched your recipient selection.')->withInput();
@@ -143,4 +182,5 @@ $recipients = Participant::whereIn('id', $participantIds)
 
         return back()->with('success', $message);
     }
-}
+ }
+

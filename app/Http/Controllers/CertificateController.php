@@ -22,11 +22,11 @@ class CertificateController extends Controller
     {
         $search = trim((string) $request->query('search', ''));
 
-    $sessionFilter = $request->query('session');
-    $certificates = Certificate::with(['participant', 'testSession', 'issuer'])
-    ->when($sessionFilter, function ($query) use ($sessionFilter) {
-    $query->where('test_session_id', $sessionFilter);
-})
+        $sessionFilter = $request->query('session');
+        $certificates = Certificate::with(['participant', 'testSession', 'issuer'])
+        ->when($sessionFilter, function ($query) use ($sessionFilter) {
+        $query->where('test_session_id', $sessionFilter);
+    })
     
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($subQuery) use ($search) {
