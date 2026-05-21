@@ -172,7 +172,7 @@ class NewsletterSubscriberController extends Controller
         }
 
         if ($sent === 0) {
-            return back()->with('error', 'No email was sent. Please review mail settings and try again.')->withInput();
+            return back()->with('Error!', 'No email was sent. Please review mail settings and try again.')->withInput();
         }
 
         $message = "Newsletter dispatch completed. Sent: {$sent}, Failed: {$failed}.";
