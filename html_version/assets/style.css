@@ -1,0 +1,107 @@
+﻿:root {
+  --bg: #f1f5f9;
+  --text: #0f172a;
+  --card: #ffffff;
+  --muted: #64748b;
+  --brand: #0f766e;
+  --brand2: #0ea5e9;
+  --border: #dbe3ee;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at top right, #dff6ff, var(--bg) 55%);
+  color: var(--text);
+}
+a { color: #0369a1; text-decoration: none; }
+a:hover { text-decoration: underline; }
+header.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,.95);
+  padding: 12px 16px;
+  backdrop-filter: blur(8px);
+}
+.brand {
+  font-weight: 800;
+  color: var(--brand);
+}
+nav.quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+nav.quick-links a {
+  display: inline-flex;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+/* Ensure app-shell pages in subfolders use full-width main area. */
+body > div > div > main {
+  width: 100%;
+  max-width: 100%;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+}
+.meta {
+  color: var(--muted);
+  font-size: 13px;
+}
+img { max-width: 100%; height: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+th, td {
+  border-bottom: 1px solid var(--border);
+  padding: 10px;
+  text-align: left;
+}
+th { background: #f8fafc; }
+input, select, textarea, button {
+  font: inherit;
+}
+input, select, textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 10px;
+}
+button, .btn-primary, .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-weight: 600;
+}
+.btn-primary {
+  color: #fff;
+  background: linear-gradient(120deg, var(--brand), var(--brand2));
+}
+.btn-secondary {
+  color: #0f172a;
+  background: #e2e8f0;
+}

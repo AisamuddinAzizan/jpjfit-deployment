@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JPJFit Application Guide</title>
+    <style>
+        :root {
+            --bg: #f2f7fb;
+            --ink: #10243f;
+            --muted: #59708d;
+            --line: #d5e1ee;
+            --card: #ffffff;
+            --brand: #0a5ea8;
+            --brand-2: #0c80c6;
+            --accent: #e9a319;
+            --ok: #13875a;
+            --bad: #cb2f45;
+            --radius: 14px;
+            --shadow: 0 12px 28px rgba(16, 36, 63, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 5% -10%, #d7ecff 0, transparent 30%),
+                radial-gradient(circle at 95% 110%, #ffecc7 0, transparent 34%),
+                var(--bg);
+            color: var(--ink);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.55;
+        }
+
+        .page {
+            width: min(1160px, 92vw);
+            margin: 26px auto 38px;
+        }
+
+        .hero {
+            background: linear-gradient(128deg, #083a73 0%, #0a5ea8 58%, #0f80c2 100%);
+            border-radius: 18px;
+            color: #fff;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero:after {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            right: -170px;
+            top: -180px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.11);
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(1.4rem, 2.7vw, 2rem);
+            letter-spacing: 0.3px;
+        }
+
+        .hero p {
+            margin: 8px 0 0;
+            max-width: 74ch;
+            color: #dcecff;
+        }
+
+        .meta {
+            margin-top: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .layout {
+            margin-top: 18px;
+            display: grid;
+            gap: 14px;
+            grid-template-columns: 250px 1fr;
+            align-items: start;
+        }
+
+        .toc,
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .toc {
+            position: sticky;
+            top: 18px;
+            padding: 12px;
+        }
+
+        .toc h2 {
+            margin: 8px 8px 10px;
+            font-size: 0.98rem;
+        }
+
+        .toc a {
+            display: block;
+            text-decoration: none;
+            color: var(--ink);
+            border-radius: 9px;
+            padding: 8px 10px;
+            font-size: 0.94rem;
+            margin: 2px 0;
+        }
+
+        .toc a:hover {
+            background: #eef5fc;
+            color: var(--brand);
+        }
+
+        .panel {
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .panel h2 {
+            margin: 0;
+            font-size: 1.18rem;
+        }
+
+        .panel .sub {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 0.93rem;
+        }
+
+        .grid {
+            margin-top: 12px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 12px;
+            background: linear-gradient(180deg, #fff 0%, #fafcff 100%);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 0.98rem;
+        }
+
+        .card p {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .workflow {
+            margin-top: 12px;
+            border-left: 3px solid #c9dff3;
+            padding-left: 12px;
+        }
+
+        .step {
+            margin-bottom: 12px;
+        }
+
+        .step strong {
+            color: var(--brand);
+        }
+
+        .matrix-wrap,
+        .route-wrap {
+            margin-top: 12px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 760px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            border-bottom: 1px solid var(--line);
+            padding: 10px;
+            font-size: 0.9rem;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f1f7fe;
+            color: #22486f;
+            white-space: nowrap;
+        }
+
+        td code {
+            background: #edf4fc;
+            color: #0f3962;
+            border-radius: 7px;
+            padding: 2px 6px;
+            font-size: 0.84rem;
+        }
+
+        .method {
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.6px;
+            color: #fff;
+            border-radius: 999px;
+            padding: 3px 8px;
+            display: inline-block;
+        }
+
+        .method.get { background: var(--brand); }
+        .method.post { background: #0f7e64; }
+        .method.put { background: #9258cc; }
+        .method.patch { background: #9258cc; }
+        .method.delete { background: var(--bad); }
+
+        .controls {
+            margin-top: 12px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: 1fr 180px;
+        }
+
+        .controls input,
+        .controls select {
+            width: 100%;
+            border: 1px solid #cbd9e9;
+            border-radius: 10px;
+            padding: 9px 10px;
+            font-size: 0.92rem;
+            background: #fff;
+            color: var(--ink);
+        }
+
+        .kpi {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .hint {
+            margin-top: 10px;
+            font-size: 0.87rem;
+            color: #5a6f87;
+            background: #f4f9ff;
+            border: 1px solid #d5e6f8;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #eef5fc;
+            color: #23517b;
+            font-size: 0.75rem;
+            border: 1px solid #d7e5f4;
+            white-space: nowrap;
+        }
+
+        .logic-grid {
+            margin-top: 12px;
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .logic-box {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            padding: 12px;
+        }
+
+        .logic-box h3 {
+            margin: 0;
+            font-size: 0.98rem;
+            color: #0d3d6d;
+        }
+
+        .logic-meta {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: #55728f;
+        }
+
+        .logic-box .desc {
+            margin: 8px 0 0;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .logic-line {
+            margin-top: 8px;
+            font-size: 0.87rem;
+            color: #2f4f6f;
+        }
+
+        .logic-box code {
+            background: #edf4fc;
+            color: #0f3962;
+            border-radius: 7px;
+            padding: 2px 6px;
+            font-size: 0.84rem;
+        }
+
+        @media (max-width: 980px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .toc {
+                position: static;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <header class="hero">
+        <h1>JPJFit Application Guide</h1>
+        <p>
+            A practical guide to what each module does, which routes are available, and the end-to-end flow for daily operations.
+            This page is static and can be opened directly at <code>/application-guide.html</code>.
+        </p>
+        <div class="meta">
+            <span class="pill">Version: Admin Guide</span>
+            <span class="pill">Scope: Web + API routes</span>
+            <span class="pill">Updated: 12 Mar 2026</span>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="toc">
+            <h2>Contents</h2>
+            <a href="#overview">1. Overview</a>
+            <a href="#modules">2. Functions by Module</a>
+            <a href="#workflow">3. How To Use</a>
+            <a href="#logic">4. Logic Functions</a>
+            <a href="#roles">5. Role Access Matrix</a>
+            <a href="#routes">6. Route Directory</a>
+            <a href="#tips">7. Best Practices</a>
+        </aside>
+
+        <main>
+            <section id="overview" class="panel">
+                <h2>1. Overview</h2>
+                <p class="sub">JPJFit manages participant fitness operations from registration to certification and reporting.</p>
+                <div class="grid">
+                    <div class="card">
+                        <h3>Primary Users</h3>
+                        <p>Admin, JPJ Officer, and Health Officer collaborate through role-based access.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Main Outcome</h3>
+                        <p>Track pass/fail performance, generate official certificates, and notify participants by email.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Data Flow</h3>
+                        <p>Participants -> Sessions -> Health/Fitness Results -> Certificates -> Reports.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="modules" class="panel">
+                <h2>2. Functions by Module</h2>
+                <p class="sub">What each feature does in day-to-day operations.</p>
+                <div class="grid">
+                    <div class="card">
+                        <h3>Dashboard</h3>
+                        <p>Shows participant totals, pass/fail totals, session performance chart, and notifications.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Participants</h3>
+                        <p>Create and maintain participant profiles used across all test sessions.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Test Sessions</h3>
+                        <p>Schedule sessions, assign location/date, track status, and attach participants.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Health Records</h3>
+                        <p>Capture medical screening metrics before or during sessions.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Fitness Results</h3>
+                        <p>Record physical performance metrics; system calculates score, classification, and pass/fail.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Certificates</h3>
+                        <p>Generate PDF certificates for passing participants and email them individually or in bulk.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Reports</h3>
+                        <p>View analytics summary and export CSV/PDF for management reporting.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Landing Content CMS</h3>
+                        <p>Admin edits public homepage text and hero slider images from dashboard.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Mail Settings</h3>
+                        <p>Configure Gmail/SMTP/Mailtrap credentials and sender identity for outbound emails.</p>
+                    </div>
+                    <div class="card">
+                        <h3>User Management</h3>
+                        <p>Admin creates/updates users and roles to control access permissions.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="workflow" class="panel">
+                <h2>3. How To Use The Application</h2>
+                <p class="sub">Recommended standard flow.</p>
+                <div class="workflow">
+                    <div class="step"><strong>Step 1:</strong> Admin configures users/roles and mail settings.</div>
+                    <div class="step"><strong>Step 2:</strong> JPJ Officer creates test sessions (typically Jan and Jul each year).</div>
+                    <div class="step"><strong>Step 3:</strong> Participants are registered and attached to sessions.</div>
+                    <div class="step"><strong>Step 4:</strong> Health Officer records health screening data.</div>
+                    <div class="step"><strong>Step 5:</strong> JPJ Officer records fitness metrics and verifies pass/fail output.</div>
+                    <div class="step"><strong>Step 6:</strong> Generate certificates for participants with pass results.</div>
+                    <div class="step"><strong>Step 7:</strong> Send certificate emails (single or Send All Pending).</div>
+                    <div class="step"><strong>Step 8:</strong> Export reports for management and auditing.</div>
+                </div>
+                <div class="hint">
+                    Tip: If email sends fail, check <code>Mail Settings</code> first (active mailer, username, app password, from address).
+                </div>
+            </section>
+
+            <section id="logic" class="panel">
+                <h2>4. Logic Functions</h2>
+                <p class="sub">Core backend functions shown in boxes with how to run and what they return/output.</p>
+
+                <div class="logic-grid">
+                    <article class="logic-box">
+                        <h3>FitnessScoringService::calculate(array $metrics)</h3>
+                        <div class="logic-meta">Module: Fitness Results</div>
+                        <p class="desc">Calculates total score, classification, and pass/fail based on UKJK metrics.</p>
+                        <div class="logic-line"><strong>How to run:</strong> Submit <code>POST /fitness-results</code> from the Fitness Results form.</div>
+                        <div class="logic-line"><strong>Returns:</strong> <code>{ total_score, classification, result_status }</code>.</div>
+                    </article>
+
+                    <article class="logic-box">
+                        <h3>CertificateController@store</h3>
+                        <div class="logic-meta">Module: Certificates</div>
+                        <p class="desc">Generates a certificate PDF for a participant/session pair after pass validation.</p>
+                        <div class="logic-line"><strong>How to run:</strong> <code>POST /certificates</code> with <code>participant_id</code> and <code>test_session_id</code>.</div>
+                        <div class="logic-line"><strong>Returns:</strong> Redirect with success/error flash; saves PDF in storage and certificate record in DB.</div>
+                    </article>
+
+                    <article class="logic-box">
+                        <h3>CertificateController@sendEmail</h3>
+                        <div class="logic-meta">Module: Certificates</div>
+                        <p class="desc">Sends one certificate email to the participant with certificate PDF attachment.</p>
+                        <div class="logic-line"><strong>How to run:</strong> <code>POST /certificates/{certificate}/send-email</code> from Certificates page.</div>
+                        <div class="logic-line"><strong>Returns:</strong> Redirect with success/error flash; updates sent status when email succeeds.</div>
+                    </article>
+
+                    <article class="logic-box">
+                        <h3>CertificateController@sendPendingEmails</h3>
+                        <div class="logic-meta">Module: Certificates</div>
+                        <p class="desc">Bulk sends pending certificate emails and skips invalid/unqualified records.</p>
+                        <div class="logic-line"><strong>How to run:</strong> <code>POST /certificates/send-pending-emails</code> from "Send All Pending" button.</div>
+                        <div class="logic-line"><strong>Returns:</strong> Redirect with summary: <code>Sent / Skipped / Failed</code>.</div>
+                    </article>
+
+                    <article class="logic-box">
+                        <h3>MailSettingsService::applyRuntimeConfig()</h3>
+                        <div class="logic-meta">Module: Mail Settings</div>
+                        <p class="desc">Loads DB mail settings and applies active provider configuration at runtime.</p>
+                        <div class="logic-line"><strong>How to run:</strong> Automatically on app boot, and after saving <code>PUT /mail-settings</code>.</div>
+                        <div class="logic-line"><strong>Returns:</strong> No direct response; updates runtime <code>mail.*</code> config for outgoing emails.</div>
+                    </article>
+
+                    <article class="logic-box">
+                        <h3>LandingPageContentService::all()</h3>
+                        <div class="logic-meta">Module: Landing CMS</div>
+                        <p class="desc">Combines stored landing content with fallback defaults.</p>
+                        <div class="logic-line"><strong>How to run:</strong> Open home page <code>GET /</code> or admin CMS <code>GET /landing-page-content</code>.</div>
+                        <div class="logic-line"><strong>Returns:</strong> Key-value map of landing fields used in public page rendering.</div>
+                    </article>
+
+                    <article class="logic-box">
+                        <h3>ReportController@exportCsv</h3>
+                        <div class="logic-meta">Module: Reports</div>
+                        <p class="desc">Builds report dataset and streams downloadable CSV output.</p>
+                        <div class="logic-line"><strong>How to run:</strong> <code>GET /reports/export/csv</code> from Reports page.</div>
+                        <div class="logic-line"><strong>Returns:</strong> CSV file response (download).</div>
+                    </article>
+
+                    <article class="logic-box">
+                        <h3>ReportController@exportPdf</h3>
+                        <div class="logic-meta">Module: Reports</div>
+                        <p class="desc">Builds report view and returns PDF export file.</p>
+                        <div class="logic-line"><strong>How to run:</strong> <code>GET /reports/export/pdf</code> from Reports page.</div>
+                        <div class="logic-line"><strong>Returns:</strong> PDF file response (download/stream based on browser).</div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="roles" class="panel">
+                <h2>5. Role Access Matrix</h2>
+                <p class="sub">High-level permission map.</p>
+                <div class="matrix-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Module</th>
+                            <th>Admin</th>
+                            <th>JPJ Officer</th>
+                            <th>Health Officer</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr><td>Dashboard + Notifications</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                        <tr><td>User Management</td><td>Yes</td><td>No</td><td>No</td></tr>
+                        <tr><td>Landing Content CMS</td><td>Yes</td><td>No</td><td>No</td></tr>
+                        <tr><td>Mail Settings</td><td>Yes</td><td>No</td><td>No</td></tr>
+                        <tr><td>Participants</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+                        <tr><td>Test Sessions</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+                        <tr><td>Fitness Results</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+                        <tr><td>Health Records</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+                        <tr><td>Certificates (index/store/send)</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                        <tr><td>Certificate Delete</td><td>Yes</td><td>No</td><td>No</td></tr>
+                        <tr><td>Reports</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="routes" class="panel">
+                <h2>6. Route Directory</h2>
+                <p class="sub">Search by path/name/purpose and filter by access scope.</p>
+
+                <div class="controls">
+                    <input id="routeSearch" type="text" placeholder="Search route path, name, or purpose">
+                    <select id="scopeFilter">
+                        <option value="all">All scopes</option>
+                        <option value="public">Public</option>
+                        <option value="api">API</option>
+                        <option value="auth">Authenticated</option>
+                        <option value="admin">Admin</option>
+                        <option value="jpj_officer">JPJ Officer</option>
+                        <option value="health_officer">Health Officer</option>
+                        <option value="auth_system">Auth System</option>
+                    </select>
+                </div>
+                <div id="routeKpi" class="kpi"></div>
+
+                <div class="route-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Path</th>
+                            <th>Route Name</th>
+                            <th>Scope</th>
+                            <th>Purpose</th>
+                        </tr>
+                        </thead>
+                        <tbody id="routeBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="tips" class="panel">
+                <h2>7. Best Practices</h2>
+                <p class="sub">Recommended operational habits.</p>
+                <div class="grid">
+                    <div class="card"><h3>Keep session schedule consistent</h3><p>Use Jan/Jul pattern yearly for clean long-term analytics.</p></div>
+                    <div class="card"><h3>Validate participant emails</h3><p>Ensure email exists before certificate generation/sending.</p></div>
+                    <div class="card"><h3>Run pending email in batches</h3><p>Use Send All Pending after confirming mail provider settings.</p></div>
+                    <div class="card"><h3>Use export for audit trail</h3><p>Generate PDF/CSV reports periodically for records and compliance.</p></div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script>
+const routes = [
+    { method: "GET", path: "/", name: "home", scope: "public", purpose: "Public landing page" },
+    { method: "POST", path: "/newsletter/subscribe", name: "newsletter.subscribe", scope: "public", purpose: "Subscribe to newsletter" },
+    { method: "POST", path: "/language", name: "language.switch", scope: "public", purpose: "Switch site language" },
+
+    { method: "GET", path: "/api/stats", name: "api.stats", scope: "api", purpose: "Landing/API statistics" },
+    { method: "GET", path: "/api/testimonials", name: "api.testimonials", scope: "api", purpose: "Landing/API testimonials" },
+
+    { method: "GET", path: "/dashboard", name: "dashboard", scope: "auth", purpose: "Main dashboard" },
+    { method: "POST", path: "/notifications/read-all", name: "notifications.read-all", scope: "auth", purpose: "Mark notifications as read" },
+
+    { method: "GET", path: "/profile", name: "profile.edit", scope: "auth", purpose: "Edit own profile" },
+    { method: "PATCH", path: "/profile", name: "profile.update", scope: "auth", purpose: "Update own profile" },
+    { method: "DELETE", path: "/profile", name: "profile.destroy", scope: "auth", purpose: "Delete own profile" },
+
+    { method: "GET", path: "/users", name: "users.index", scope: "admin", purpose: "List system users" },
+    { method: "GET", path: "/users/create", name: "users.create", scope: "admin", purpose: "User create form" },
+    { method: "POST", path: "/users", name: "users.store", scope: "admin", purpose: "Create user" },
+    { method: "GET", path: "/users/{user}", name: "users.show", scope: "admin", purpose: "View user" },
+    { method: "GET", path: "/users/{user}/edit", name: "users.edit", scope: "admin", purpose: "Edit user form" },
+    { method: "PUT|PATCH", path: "/users/{user}", name: "users.update", scope: "admin", purpose: "Update user" },
+    { method: "DELETE", path: "/users/{user}", name: "users.destroy", scope: "admin", purpose: "Delete user" },
+
+    { method: "GET", path: "/landing-page-content", name: "landing-content.edit", scope: "admin", purpose: "Landing CMS editor" },
+    { method: "PUT", path: "/landing-page-content", name: "landing-content.update", scope: "admin", purpose: "Save landing CMS text" },
+    { method: "POST", path: "/landing-page-content/hero-images", name: "landing-content.hero-images.store", scope: "admin", purpose: "Upload hero image" },
+    { method: "DELETE", path: "/landing-page-content/hero-images/{landingPageImage}", name: "landing-content.hero-images.destroy", scope: "admin", purpose: "Delete hero image" },
+
+    { method: "GET", path: "/mail-settings", name: "mail-settings.edit", scope: "admin", purpose: "Mail settings page" },
+    { method: "PUT", path: "/mail-settings", name: "mail-settings.update", scope: "admin", purpose: "Save mail provider configuration" },
+
+    { method: "GET", path: "/participants", name: "participants.index", scope: "jpj_officer", purpose: "List participants" },
+    { method: "GET", path: "/participants/create", name: "participants.create", scope: "jpj_officer", purpose: "Participant create form" },
+    { method: "POST", path: "/participants", name: "participants.store", scope: "jpj_officer", purpose: "Create participant" },
+    { method: "GET", path: "/participants/{participant}", name: "participants.show", scope: "jpj_officer", purpose: "View participant" },
+    { method: "GET", path: "/participants/{participant}/edit", name: "participants.edit", scope: "jpj_officer", purpose: "Edit participant" },
+    { method: "PUT|PATCH", path: "/participants/{participant}", name: "participants.update", scope: "jpj_officer", purpose: "Update participant" },
+    { method: "DELETE", path: "/participants/{participant}", name: "participants.destroy", scope: "jpj_officer", purpose: "Delete participant" },
+
+    { method: "GET", path: "/test-sessions", name: "test-sessions.index", scope: "jpj_officer", purpose: "List sessions" },
+    { method: "GET", path: "/test-sessions/create", name: "test-sessions.create", scope: "jpj_officer", purpose: "Session create form" },
+    { method: "POST", path: "/test-sessions", name: "test-sessions.store", scope: "jpj_officer", purpose: "Create session" },
+    { method: "GET", path: "/test-sessions/{test_session}", name: "test-sessions.show", scope: "jpj_officer", purpose: "View session" },
+    { method: "GET", path: "/test-sessions/{test_session}/edit", name: "test-sessions.edit", scope: "jpj_officer", purpose: "Edit session" },
+    { method: "PUT|PATCH", path: "/test-sessions/{test_session}", name: "test-sessions.update", scope: "jpj_officer", purpose: "Update session" },
+    { method: "DELETE", path: "/test-sessions/{test_session}", name: "test-sessions.destroy", scope: "jpj_officer", purpose: "Delete session" },
+
+    { method: "GET", path: "/fitness-results", name: "fitness-results.index", scope: "jpj_officer", purpose: "List fitness results" },
+    { method: "GET", path: "/fitness-results/create", name: "fitness-results.create", scope: "jpj_officer", purpose: "Fitness result form" },
+    { method: "POST", path: "/fitness-results", name: "fitness-results.store", scope: "jpj_officer", purpose: "Store fitness result" },
+    { method: "GET", path: "/fitness-results/{fitness_result}", name: "fitness-results.show", scope: "jpj_officer", purpose: "View fitness result" },
+    { method: "GET", path: "/fitness-results/{fitness_result}/edit", name: "fitness-results.edit", scope: "jpj_officer", purpose: "Edit fitness result" },
+    { method: "PUT|PATCH", path: "/fitness-results/{fitness_result}", name: "fitness-results.update", scope: "jpj_officer", purpose: "Update fitness result" },
+    { method: "DELETE", path: "/fitness-results/{fitness_result}", name: "fitness-results.destroy", scope: "jpj_officer", purpose: "Delete fitness result" },
+
+    { method: "GET", path: "/health-records", name: "health-records.index", scope: "health_officer", purpose: "List health records" },
+    { method: "GET", path: "/health-records/create", name: "health-records.create", scope: "health_officer", purpose: "Health record form" },
+    { method: "POST", path: "/health-records", name: "health-records.store", scope: "health_officer", purpose: "Store health record" },
+    { method: "GET", path: "/health-records/{health_record}", name: "health-records.show", scope: "health_officer", purpose: "View health record" },
+    { method: "GET", path: "/health-records/{health_record}/edit", name: "health-records.edit", scope: "health_officer", purpose: "Edit health record" },
+    { method: "PUT|PATCH", path: "/health-records/{health_record}", name: "health-records.update", scope: "health_officer", purpose: "Update health record" },
+    { method: "DELETE", path: "/health-records/{health_record}", name: "health-records.destroy", scope: "health_officer", purpose: "Delete health record" },
+
+    { method: "GET", path: "/certificates", name: "certificates.index", scope: "auth", purpose: "List certificates" },
+    { method: "POST", path: "/certificates", name: "certificates.store", scope: "auth", purpose: "Generate certificate" },
+    { method: "POST", path: "/certificates/{certificate}/send-email", name: "certificates.send-email", scope: "auth", purpose: "Send one certificate email" },
+    { method: "POST", path: "/certificates/send-pending-emails", name: "certificates.send-pending-emails", scope: "auth", purpose: "Send all pending certificate emails" },
+    { method: "GET", path: "/certificates/{certificate}/preview", name: "certificates.preview", scope: "auth", purpose: "Preview certificate PDF" },
+    { method: "GET", path: "/certificates/{certificate}/download", name: "certificates.download", scope: "auth", purpose: "Download certificate PDF" },
+    { method: "DELETE", path: "/certificates/{certificate}", name: "certificates.destroy", scope: "admin", purpose: "Delete certificate" },
+
+    { method: "GET", path: "/reports", name: "reports.index", scope: "auth", purpose: "View analytics report" },
+    { method: "GET", path: "/reports/export/csv", name: "reports.export.csv", scope: "auth", purpose: "Export report CSV" },
+    { method: "GET", path: "/reports/export/pdf", name: "reports.export.pdf", scope: "auth", purpose: "Export report PDF" },
+
+    { method: "GET", path: "/login", name: "login", scope: "auth_system", purpose: "Login form" },
+    { method: "POST", path: "/login", name: "login.submit", scope: "auth_system", purpose: "Process login" },
+    { method: "POST", path: "/logout", name: "logout", scope: "auth_system", purpose: "Logout" },
+    { method: "GET", path: "/register", name: "register", scope: "auth_system", purpose: "Registration form" },
+    { method: "POST", path: "/register", name: "register.submit", scope: "auth_system", purpose: "Process registration" },
+    { method: "GET", path: "/forgot-password", name: "password.request", scope: "auth_system", purpose: "Forgot password form" },
+    { method: "POST", path: "/forgot-password", name: "password.email", scope: "auth_system", purpose: "Send reset link" },
+    { method: "GET", path: "/reset-password/{token}", name: "password.reset", scope: "auth_system", purpose: "Reset password form" },
+    { method: "POST", path: "/reset-password", name: "password.store", scope: "auth_system", purpose: "Store new password" },
+    { method: "GET", path: "/verify-email", name: "verification.notice", scope: "auth_system", purpose: "Email verification notice" },
+    { method: "GET", path: "/verify-email/{id}/{hash}", name: "verification.verify", scope: "auth_system", purpose: "Verify email" },
+    { method: "POST", path: "/email/verification-notification", name: "verification.send", scope: "auth_system", purpose: "Resend verification email" },
+    { method: "GET", path: "/confirm-password", name: "password.confirm", scope: "auth_system", purpose: "Confirm password form" },
+    { method: "POST", path: "/confirm-password", name: "password.confirm.submit", scope: "auth_system", purpose: "Process confirm password" },
+    { method: "PUT", path: "/password", name: "password.update", scope: "auth_system", purpose: "Update password" }
+];
+
+const routeBody = document.getElementById("routeBody");
+const routeSearch = document.getElementById("routeSearch");
+const scopeFilter = document.getElementById("scopeFilter");
+const routeKpi = document.getElementById("routeKpi");
+
+function methodClass(method) {
+    const m = method.toLowerCase();
+    if (m.includes("get")) return "get";
+    if (m.includes("post")) return "post";
+    if (m.includes("put")) return "put";
+    if (m.includes("patch")) return "patch";
+    if (m.includes("delete")) return "delete";
+    return "get";
+}
+
+function renderRoutes() {
+    const q = routeSearch.value.trim().toLowerCase();
+    const scope = scopeFilter.value;
+
+    const rows = routes.filter((r) => {
+        const inScope = scope === "all" || r.scope === scope;
+        const inQuery = !q
+            || r.path.toLowerCase().includes(q)
+            || r.name.toLowerCase().includes(q)
+            || r.purpose.toLowerCase().includes(q)
+            || r.method.toLowerCase().includes(q);
+        return inScope && inQuery;
+    });
+
+    routeBody.innerHTML = rows.map((r) => `
+        <tr>
+            <td><span class="method ${methodClass(r.method)}">${r.method}</span></td>
+            <td><code>${r.path}</code></td>
+            <td><code>${r.name}</code></td>
+            <td><span class="tag">${r.scope}</span></td>
+            <td>${r.purpose}</td>
+        </tr>
+    `).join("");
+
+    routeKpi.textContent = `${rows.length} route(s) shown out of ${routes.length}`;
+}
+
+routeSearch.addEventListener("input", renderRoutes);
+scopeFilter.addEventListener("change", renderRoutes);
+renderRoutes();
+</script>
+</body>
+</html>

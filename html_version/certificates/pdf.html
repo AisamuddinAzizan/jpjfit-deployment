@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JPJFit Static - Certificate</title>
+  <style>
+    body {
+      font-family: "DejaVu Sans", Arial, sans-serif;
+      margin: 0;
+      padding: 32px;
+      color: #102a43;
+      background: #f7fafc;
+    }
+
+    .toolbar {
+      margin: 0 auto 16px;
+      max-width: 980px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .toolbar a,
+    .toolbar button {
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+      color: #0f172a;
+      background: #e2e8f0;
+    }
+
+    .toolbar button {
+      background: linear-gradient(120deg, #0f766e, #0ea5e9);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .certificate {
+      margin: 0 auto;
+      max-width: 980px;
+      border: 8px double #0b2d45;
+      padding: 30px;
+      background: #fff;
+      box-shadow: 0 10px 35px rgba(2, 32, 59, 0.12);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 36px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    h2 {
+      margin: 8px 0 24px;
+      font-size: 20px;
+      text-align: center;
+      color: #0f766e;
+    }
+
+    .label {
+      text-transform: uppercase;
+      font-size: 12px;
+      color: #486581;
+      letter-spacing: 1.5px;
+    }
+
+    .name {
+      margin: 10px 0;
+      font-size: 32px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .details {
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .footer {
+      margin-top: 40px;
+      display: table;
+      width: 100%;
+    }
+
+    .footer div {
+      display: table-cell;
+      width: 50%;
+      vertical-align: top;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      .toolbar {
+        display: none;
+      }
+
+      .certificate {
+        box-shadow: none;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <a href="index.html">Back to Certificates</a>
+    <button type="button" onclick="window.print()">Print Certificate</button>
+  </div>
+
+  <div class="certificate">
+    <p style="text-align:center; margin:0; font-size:13px;">ROAD TRANSPORT DEPARTMENT MALAYSIA</p>
+    <h1>CERTIFICATE OF FITNESS</h1>
+    <h2>JPJFit UKJK Assessment</h2>
+
+    <p class="label" style="text-align:center;">This certifies that</p>
+    <p class="name">Sample Participant</p>
+    <p style="text-align:center; margin:0;">IC No: 900101-10-1234 | Participant No: P-00012</p>
+
+    <div class="details">
+      <p>has successfully passed the UKJK fitness assessment session <strong>UKJK Batch A</strong> (UKJK-2026-03) held at JPJ Academy Track on 09 Mar 2026.</p>
+      <p>Final Score: <strong>84</strong> | Classification: <strong>Good</strong></p>
+      <p>Certificate Number: <strong>CERT-2026-00012</strong></p>
+    </div>
+
+    <div class="footer">
+      <div>
+        <p class="label">Issued Date</p>
+        <p>09 Mar 2026</p>
+      </div>
+      <div style="text-align:right;">
+        <p class="label">Authorized By</p>
+        <p>Admin User</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

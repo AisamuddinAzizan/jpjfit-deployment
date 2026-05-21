@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JPJFit Static - Fitness Results Report</title>
+  <style>
+    body {
+      font-family: "DejaVu Sans", Arial, sans-serif;
+      color: #1f2937;
+      background: #f8fafc;
+      margin: 0;
+      padding: 24px;
+    }
+
+    .toolbar {
+      max-width: 1200px;
+      margin: 0 auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .toolbar a,
+    .toolbar button {
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .toolbar a {
+      color: #0f172a;
+      background: #e2e8f0;
+    }
+
+    .toolbar button {
+      color: #fff;
+      font-weight: 600;
+      background: linear-gradient(120deg, #0f766e, #0ea5e9);
+    }
+
+    .sheet {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      padding: 18px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 22px;
+    }
+
+    p {
+      margin: 0 0 12px;
+      font-size: 12px;
+      color: #4b5563;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    th,
+    td {
+      border: 1px solid #cbd5e1;
+      padding: 6px;
+      text-align: left;
+    }
+
+    th {
+      background: #e2e8f0;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      .toolbar {
+        display: none;
+      }
+
+      .sheet {
+        box-shadow: none;
+        border: 0;
+        max-width: none;
+        border-radius: 0;
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <a href="index.html">Back to Reports</a>
+    <button type="button" onclick="window.print()">Print Report</button>
+  </div>
+
+  <div class="sheet">
+    <h1>JPJFit Fitness Results Report</h1>
+    <p>Generated at 09 Mar 2026 10:30</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Participant No</th>
+          <th>Name</th>
+          <th>Session</th>
+          <th>Push</th>
+          <th>Sit</th>
+          <th>Reach</th>
+          <th>Shuttle</th>
+          <th>2.4km (sec)</th>
+          <th>Score</th>
+          <th>Class</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>P-00012</td>
+          <td>Ahmad Rahman</td>
+          <td>UKJK-2026-03</td>
+          <td>45</td>
+          <td>42</td>
+          <td>28</td>
+          <td>9.5</td>
+          <td>760</td>
+          <td>84</td>
+          <td>Good</td>
+          <td>Pass</td>
+        </tr>
+        <tr>
+          <td>P-00021</td>
+          <td>Siti Zulaikha</td>
+          <td>UKJK-2026-03</td>
+          <td>35</td>
+          <td>38</td>
+          <td>24</td>
+          <td>8.2</td>
+          <td>820</td>
+          <td>72</td>
+          <td>Good</td>
+          <td>Pass</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

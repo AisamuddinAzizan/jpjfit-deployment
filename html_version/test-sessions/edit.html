@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JPJFit Static - test-sessions - edit</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a href="../index.html" class="brand">JPJFit Static</a>
+    <nav class="quick-links" aria-label="Quick Links">
+      <a href="../index.html">Home</a>
+      <a href="../dashboard.html">Dashboard</a>
+      <a href="../auth/login.html">Login</a>
+      <a href="../auth/register.html">Register</a>
+      <a href="../all-pages.html">All Pages</a>
+    </nav>
+  </header>
+  <main>
+    <div class="card" style="margin-bottom: 14px;">
+      <h1 style="margin:0 0 6px 0;">test-sessions - edit</h1>
+      <p class="meta" style="margin:0;">Generated from: resources/views/test-sessions/edit.blade.php</p>
+    </div>
+    
+    
+        <h1 class="text-2xl font-extrabold text-slate-800">Edit Test Session</h1>
+    
+
+    <div class="panel-card p-5">
+        <form method="POST" action="edit.html">
+        <div class="grid gap-4 md:grid-cols-2">
+          <div>
+            <label class="text-sm font-medium text-slate-700">Session Code</label>
+            <input class="form-input" name="session_code" type="text" value="UKJK-2026-03" required>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-slate-700">Title</label>
+            <input class="form-input" name="title" type="text" value="UKJK Batch A" required>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-slate-700">Location</label>
+            <input class="form-input" name="location" type="text" value="JPJ Track" required>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-slate-700">Date</label>
+            <input class="form-input" name="session_date" type="date" value="2026-03-15" required>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-slate-700">Start Time</label>
+            <input class="form-input" name="start_time" type="time" value="08:30">
+          </div>
+          <div>
+            <label class="text-sm font-medium text-slate-700">End Time</label>
+            <input class="form-input" name="end_time" type="time" value="12:00">
+          </div>
+          <div>
+            <label class="text-sm font-medium text-slate-700">Status</label>
+            <select class="form-select" name="status" required>
+              <option value="scheduled" selected>Scheduled</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="text-sm font-medium text-slate-700">Description</label>
+            <textarea class="form-input" name="description" rows="3">Regional UKJK assessment session.</textarea>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <label class="text-sm font-medium text-slate-700">Assign Participants</label>
+          <div class="mt-2 grid max-h-56 gap-2 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-3 sm:grid-cols-2 lg:grid-cols-3">
+            <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" class="rounded border-slate-300 text-teal-700 focus:ring-teal-500" name="participant_ids[]" value="1" checked>P-001 - Ahmad Rahman</label>
+            <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" class="rounded border-slate-300 text-teal-700 focus:ring-teal-500" name="participant_ids[]" value="2">P-002 - Siti Zulaikha</label>
+            <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" class="rounded border-slate-300 text-teal-700 focus:ring-teal-500" name="participant_ids[]" value="3">P-003 - Daniel Lim</label>
+          </div>
+        </div>
+
+        <div class="mt-6 flex gap-3">
+          <button class="btn-primary" type="submit">Update Session</button>
+          <a href="index.html" class="btn-secondary">Cancel</a>
+        </div>
+        </form>
+    </div>
+
+
+  </main>
+  <script src="../assets/local-crud.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,978 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="static-token">
+    <title>JPJFit - Fitness Monitoring System</title>
+    <meta name="description" content="JPJFit helps JPJ and KKM teams monitor fitness performance, sessions, and certifications in one modern platform.">
+    <link rel="icon" type="image/png" href="../images/jpjfit_logo.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../build/assets/app-C-zfhFlz.css">
+    <link rel="stylesheet" href="../build/assets/app-D7aODYMQ.css">
+    <style>
+        .hero-swiper .swiper-slide {
+            display: none;
+        }
+
+        .hero-swiper .swiper-slide:first-child {
+            display: block;
+        }
+
+        .hero-swiper .swiper-slide.jq-active {
+            display: block;
+        }
+
+        .hero-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .hero-pagination .jq-dot {
+            width: 0.6rem;
+            height: 0.6rem;
+            border: 0;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+
+        .hero-pagination .jq-dot.is-active {
+            background: #f59e0b;
+        }
+
+        #pageLoader.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        /* Static HTML mode: AOS script may not run, so keep content visible. */
+        [data-aos] {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+        }
+
+        /* Show real testimonial card instead of skeleton placeholders in static mode. */
+        #testimonialSkeletons {
+            display: none !important;
+        }
+
+        #testimonialSwiper.hidden {
+            display: block !important;
+        }
+
+        .comparison-wrap[data-before-after] {
+            --comparison-position: 50%;
+        }
+
+        .comparison-wrap[data-before-after] [data-after] {
+            width: 100%;
+            clip-path: inset(0 calc(100% - var(--comparison-position)) 0 0);
+        }
+
+        .comparison-wrap[data-before-after] [data-divider] {
+            left: var(--comparison-position);
+        }
+
+        .comparison-wrap[data-before-after].is-dragging [data-after],
+        .comparison-wrap[data-before-after].is-dragging [data-divider] {
+            transition: none;
+        }
+    </style>
+</head>
+<body class="landing-body bg-slate-950 text-slate-100 antialiased" data-page="landing">
+    <div id="scrollProgress" class="scroll-progress" aria-hidden="true"></div>
+
+    <div id="pageLoader" class="page-loader" role="status" aria-live="polite" aria-label="Loading page">
+        <span class="loader-dot"></span>
+        <span class="loader-dot"></span>
+        <span class="loader-dot"></span>
+    </div>
+
+    <canvas id="heroMouseTrail" class="hero-mouse-trail" aria-hidden="true"></canvas>
+
+    <header id="landingNav" class="landing-nav fixed inset-x-0 top-0 z-50 transition duration-300">
+        <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+            <a href="#hero" class="flex items-center gap-3" aria-label="Go to hero section">
+                <img src="../images/jpjfit_logo.png" alt="JPJFit logo" class="h-11 w-auto object-contain">
+                <div>
+                    <p class="font-heading text-lg font-extrabold text-white">JPJFit</p>
+                    <p class="text-xs uppercase tracking-[0.18em] text-sky-200">Fitness Monitoring System</p>
+                </div>
+            </a>
+
+            <button id="mobileMenuToggle" type="button" class="landing-icon-btn md:hidden" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileMenu">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            <nav class="hidden items-center gap-6 text-sm font-medium text-slate-100 md:flex" aria-label="Primary navigation">
+                <a class="landing-link" href="#overview">Overview</a>
+                <a class="landing-link" href="#features">Features</a>
+                <a class="landing-link" href="#workflow">How It Works</a>
+                <a class="landing-link" href="#faq">FAQ</a>
+                <button id="themeToggleLanding" type="button" class="landing-icon-btn" aria-label="Toggle dark or light mode">
+                    <span data-theme-label>Dark</span>
+                </button>
+                <a href="../auth/login.html" class="btn-secondary">Login</a>
+
+                    <a href="../auth/register.html" class="btn-primary cta-magnetic" data-text-scramble="Register">Register</a>
+
+            </nav>
+        </div>
+
+        <div id="mobileMenu" class="hidden border-t border-white/10 bg-slate-900/95 px-4 py-4 backdrop-blur md:hidden">
+            <nav class="flex flex-col gap-3 text-sm" aria-label="Mobile navigation">
+                <a class="landing-link" href="#overview">Overview</a>
+                <a class="landing-link" href="#features">Features</a>
+                <a class="landing-link" href="#workflow">How It Works</a>
+                <a class="landing-link" href="#faq">FAQ</a>
+                <div class="mt-2 flex items-center gap-2">
+                    <a href="../auth/login.html" class="btn-secondary w-full justify-center">Login</a>
+
+                        <a href="../auth/register.html" class="btn-primary w-full justify-center">Register</a>
+
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="overflow-hidden">
+        <section id="hero" class="hero-section relative w-full">
+            <div id="heroParticles" class="hero-particles" aria-hidden="true"></div>
+
+            <div class="swiper hero-swiper" aria-label="Hero slider">
+                <div class="swiper-wrapper">
+                    <article class="swiper-slide hero-slide jq-active" data-bg="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1800&q=80&fm=webp">
+                        <div class="hero-overlay"></div>
+                    </article>
+
+                    <article class="swiper-slide hero-slide" data-bg="https://images.unsplash.com/photo-1486218119243-13883505764c?auto=format&fit=crop&w=1800&q=80&fm=webp">
+                        <div class="hero-overlay"></div>
+                    </article>
+
+                    <article class="swiper-slide hero-slide" data-bg="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=1800&q=80&fm=webp">
+                        <div class="hero-overlay"></div>
+                    </article>
+
+                    <article class="swiper-slide hero-slide" data-bg="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1800&q=80&fm=webp">
+                        <div class="hero-overlay"></div>
+                    </article>
+                </div>
+
+                <div class="hero-swiper-nav">
+                    <button class="hero-arrow hero-prev" type="button" aria-label="Previous slide">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <button class="hero-arrow hero-next" type="button" aria-label="Next slide">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                </div>
+                <div class="hero-pagination" aria-hidden="true"></div>
+            </div>
+
+            <div class="hero-content-layer">
+                <div class="hero-content" data-aos="fade-up">
+                    <p class="hero-chip">Operational Readiness</p>
+                    <h1 class="font-heading text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">JPJFit - Fitness Monitoring System</h1>
+                    <p class="mt-4 max-w-2xl text-base text-slate-200 sm:text-lg">Track every participant journey from registration, session attendance, health screening, and result certification in one digital flow.</p>
+                    <div class="hero-actions mt-7 flex flex-wrap items-center justify-start gap-3">
+                        <a href="../auth/login.html" class="btn-primary pulse-soft cta-magnetic" data-text-scramble="Start Monitoring">Start Monitoring</a>
+                        <a href="#features" class="btn-secondary border-white/30 bg-white/10 text-white hover:bg-white/20">Explore Features</a>
+
+                            <a href="../auth/register.html" class="btn-secondary border-white/30 bg-white/10 text-white hover:bg-white/20">Create Account</a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-10 left-1/2 z-20 -translate-x-1/2 text-center">
+                <p id="heroTypedText" class="text-sm font-semibold uppercase tracking-[0.22em] text-amber-300"></p>
+            </div>
+        </section>
+
+        <div id="overview-features-bg" class="section-rotator-bg">
+            <section id="overview" class=" py-20">
+                <div class="mx-auto grid w-full max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+                    <div data-aos="fade-right">
+                        <p class="section-overline">System Overview</p>
+                        <h2 class="font-heading mt-3 text-3xl font-extrabold text-white sm:text-4xl">A Command Center For Fitness Monitoring</h2>
+                        <p class="mt-4 text-slate-300">JPJFit is purpose-built for operational readiness. Teams can manage participants, test sessions, health checks, and outcomes from one secure, searchable platform.</p>
+                        <div class="mt-8 grid gap-3 sm:grid-cols-2">
+                            <article class="overview-chip">
+                                <span>Role-Based Access</span>
+                                <p>Admin, JPJ, and KKM workflows with secure separation.</p>
+                            </article>
+                            <article class="overview-chip">
+                                <span>Audit-Ready Records</span>
+                                <p>Consistent records for every test and certification event.</p>
+                            </article>
+                        </div>
+                    </div>
+
+                    <div data-aos="fade-left" class="grid gap-4 sm:grid-cols-2">
+                        <article class="overview-kpi">
+                            <p class="text-xs uppercase tracking-[0.18em] text-sky-300">Participants</p>
+                            <p class="mt-2 text-4xl font-extrabold text-white" data-counter="120">0</p>
+                        </article>
+                        <article class="overview-kpi">
+                            <p class="text-xs uppercase tracking-[0.18em] text-emerald-300">Sessions</p>
+                            <p class="mt-2 text-4xl font-extrabold text-white" data-counter="36">0</p>
+                        </article>
+                        <article class="overview-kpi">
+                            <p class="text-xs uppercase tracking-[0.18em] text-amber-300">Pass Rate</p>
+                            <p class="mt-2 text-4xl font-extrabold text-white"><span data-counter="87">0</span>%</p>
+                        </article>
+                        <article class="overview-kpi">
+                            <p class="text-xs uppercase tracking-[0.18em] text-violet-300">Live Workouts</p>
+                            <p class="mt-2 text-4xl font-extrabold text-white" data-live-workout-counter="64">0</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" class="py-20">
+                <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="text-center" data-aos="fade-up">
+                        <p class="section-overline">Key Features</p>
+                        <h2 class="font-heading mt-3 text-3xl font-extrabold text-white sm:text-4xl">Built To Move Fast And Stay Accurate</h2>
+                    </div>
+
+                    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                        <article class="feature-card tilt-card" data-aos="zoom-in" data-aos-delay="70" tabindex="0">
+                            <div class="feature-icon floating-icon" aria-hidden="true">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            </div>
+                            <h3 class="mt-6 font-heading text-lg font-bold text-white">Participant Management</h3>
+                            <p class="mt-2 text-sm text-slate-200">Capture full participant details and status in one place.</p>
+                            <span class="feature-glow" aria-hidden="true"></span>
+                        </article>
+                        <article class="feature-card tilt-card" data-aos="zoom-in" data-aos-delay="140" tabindex="0">
+                            <div class="feature-icon floating-icon" aria-hidden="true">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10m2 10H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2z" /></svg>
+                            </div>
+                            <h3 class="mt-6 font-heading text-lg font-bold text-white">Session Scheduling</h3>
+                            <p class="mt-2 text-sm text-slate-200">Plan sessions and monitor attendance efficiently.</p>
+                            <span class="feature-glow" aria-hidden="true"></span>
+                        </article>
+                        <article class="feature-card tilt-card" data-aos="zoom-in" data-aos-delay="210" tabindex="0">
+                            <div class="feature-icon floating-icon" aria-hidden="true">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h4l2-5 4 10 2-5h2" /></svg>
+                            </div>
+                            <h3 class="mt-6 font-heading text-lg font-bold text-white">Auto Scoring</h3>
+                            <p class="mt-2 text-sm text-slate-200">Automatic classification and pass/fail outcomes.</p>
+                            <span class="feature-glow" aria-hidden="true"></span>
+                        </article>
+                        <article class="feature-card tilt-card" data-aos="zoom-in" data-aos-delay="280" tabindex="0">
+                            <div class="feature-icon floating-icon" aria-hidden="true">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5 7l-8 4-8-4V5l8-4 8 4v12z" /></svg>
+                            </div>
+                            <h3 class="mt-6 font-heading text-lg font-bold text-white">Reports and Certificates</h3>
+                            <p class="mt-2 text-sm text-slate-200">Export and generate outputs within minutes.</p>
+                            <span class="feature-glow" aria-hidden="true"></span>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <section id="workflow" class="bg-slate-900 py-20">
+            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="text-center" data-aos="fade-up">
+                    <p class="section-overline">How It Works</p>
+                    <h2 class="font-heading mt-3 text-3xl font-extrabold text-white sm:text-4xl">Four Steps To Operational Clarity</h2>
+                </div>
+
+                <div class="workflow-grid mt-12">
+                    <article class="workflow-step" data-step-progress data-aos="fade-up" data-aos-delay="100">
+                        <span class="workflow-number">1</span>
+                        <h3 class="font-heading mt-4 text-lg font-bold text-white">Register Participant</h3>
+                        <p class="mt-2 text-sm text-slate-300">Capture official profile and assign to a session.</p>
+                        <div class="workflow-progress" aria-hidden="true"></div>
+                    </article>
+                    <article class="workflow-step" data-step-progress data-aos="fade-up" data-aos-delay="200">
+                        <span class="workflow-number">2</span>
+                        <h3 class="font-heading mt-4 text-lg font-bold text-white">Conduct Tests</h3>
+                        <p class="mt-2 text-sm text-slate-300">Record health screening and fitness metrics.</p>
+                        <div class="workflow-progress" aria-hidden="true"></div>
+                    </article>
+                    <article class="workflow-step" data-step-progress data-aos="fade-up" data-aos-delay="300">
+                        <span class="workflow-number">3</span>
+                        <h3 class="font-heading mt-4 text-lg font-bold text-white">Auto Evaluate</h3>
+                        <p class="mt-2 text-sm text-slate-300">System calculates score and result status.</p>
+                        <div class="workflow-progress" aria-hidden="true"></div>
+                    </article>
+                    <article class="workflow-step" data-step-progress data-aos="fade-up" data-aos-delay="400">
+                        <span class="workflow-number">4</span>
+                        <h3 class="font-heading mt-4 text-lg font-bold text-white">Generate Outputs</h3>
+                        <p class="mt-2 text-sm text-slate-300">Issue reports and certificates quickly.</p>
+                        <div class="workflow-progress" aria-hidden="true"></div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="preview" class="bg-slate-950 py-20">
+            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="grid gap-6 lg:grid-cols-2">
+                    <article class="preview-card" data-aos="fade-right">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="font-heading text-2xl font-extrabold text-white">Fitness Test Preview</h3>
+                            <span class="fitness-badge">UKJK Ready</span>
+                        </div>
+                        <p class="mt-3 text-sm text-slate-300">Interactive comparison slider showing baseline and improved readiness profile.</p>
+
+                        <div class="comparison-wrap mt-6" data-before-after data-position="50" style="min-height: 550px;">
+                            <img
+                                loading="lazy"
+                                src="../fitness/before.png"
+                                alt="Before training"
+                                class="comparison-img comparison-img-before-source"
+                                onerror="this.onerror=null;this.src='../images/fitness-before.svg';"
+                            >
+                            <div class="comparison-after" data-after>
+                                <img
+                                    loading="lazy"
+                                    src="../fitness/after.png"
+                                    alt="After training"
+                                    class="comparison-img comparison-img-after-source"
+                                    onerror="this.onerror=null;this.src='../images/fitness-after.svg';"
+                                >
+                            </div>
+
+                            <div class="comparison-divider" data-divider>
+                                <button
+                                    type="button"
+                                    class="comparison-handle"
+                                    data-handle
+                                    aria-label="Drag to compare before and after image"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                    aria-valuenow="50"
+                                >
+                                    <span aria-hidden="true">||</span>
+                                </button>
+                            </div>
+
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="50"
+                                class="comparison-range sr-only"
+                                data-range
+                                aria-label="Before and after comparison slider"
+                            >
+
+                            <span class="comparison-label comparison-label-before">Before</span>
+                            <span class="comparison-label comparison-label-after">After</span>
+                        </div>
+
+                        <div class="mt-6 grid gap-3 sm:grid-cols-3">
+                            <div class="fitness-level level-low">Beginner</div>
+                            <div class="fitness-level level-mid">Intermediate</div>
+                            <div class="fitness-level level-high">Advanced</div>
+                        </div>
+                    </article>
+
+                    <article class="preview-card" data-aos="fade-left">
+                        <h3 class="font-heading text-2xl font-extrabold text-white">Next Test Countdown</h3>
+                        <p class="mt-3 text-sm text-slate-300">Countdown updates live to the next scheduled session and supports quick BMI checks.</p>
+                        <div class="countdown-grid mt-6" data-countdown="259200" aria-label="Countdown timer">
+                            <div><span data-countdown-days>00</span><small>Days</small></div>
+                            <div><span data-countdown-hours>00</span><small>Hours</small></div>
+                            <div><span data-countdown-minutes>00</span><small>Minutes</small></div>
+                            <div><span data-countdown-seconds>00</span><small>Seconds</small></div>
+                        </div>
+
+                        <div class="mt-6 rounded-2xl border border-slate-700 bg-slate-900/50 p-4">
+                            <p class="text-xs uppercase tracking-[0.18em] text-slate-400">Interactive Fitness Graph</p>
+                            <canvas id="fitnessPreviewChart" class="mt-4 h-40 w-full" aria-label="Fitness graph preview"></canvas>
+                        </div>
+
+                        <button id="openBmiModal" type="button" class="btn-primary mt-6 w-full justify-center">Open BMI Calculator</button>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="stats" class="stats-parallax relative py-20">
+            <div class="stats-overlay"></div>
+            <div class="mx-auto relative z-10 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="text-center" data-aos="fade-up">
+                    <p class="section-overline text-slate-200">Live Statistics</p>
+                    <h2 class="font-heading mt-3 text-3xl font-extrabold text-white sm:text-4xl">Measured Performance, Real Numbers</h2>
+                </div>
+
+                <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" id="statsCards">
+                    <article class="stats-card skeleton-card" data-stat-card>
+                        <div class="progress-ring" data-progress-ring="87">
+                            <svg viewBox="0 0 120 120" aria-hidden="true">
+                                <circle cx="60" cy="60" r="52"></circle>
+                                <circle cx="60" cy="60" r="52" class="progress"></circle>
+                            </svg>
+                            <span data-ring-value>87%</span>
+                        </div>
+                        <h3>Pass Rate</h3>
+                    </article>
+                    <article class="stats-card skeleton-card" data-stat-card>
+                        <div class="progress-ring" data-progress-ring="36">
+                            <svg viewBox="0 0 120 120" aria-hidden="true">
+                                <circle cx="60" cy="60" r="52"></circle>
+                                <circle cx="60" cy="60" r="52" class="progress"></circle>
+                            </svg>
+                            <span data-ring-value data-counter="36">0</span>
+                        </div>
+                        <h3>Total Sessions</h3>
+                    </article>
+                    <article class="stats-card skeleton-card" data-stat-card>
+                        <div class="progress-ring" data-progress-ring="60">
+                            <svg viewBox="0 0 120 120" aria-hidden="true">
+                                <circle cx="60" cy="60" r="52"></circle>
+                                <circle cx="60" cy="60" r="52" class="progress"></circle>
+                            </svg>
+                            <span data-ring-value data-counter="120">0</span>
+                        </div>
+                        <h3>Total Participants</h3>
+                    </article>
+                    <article class="stats-card skeleton-card" data-stat-card>
+                        <div class="progress-ring" data-progress-ring="32">
+                            <svg viewBox="0 0 120 120" aria-hidden="true">
+                                <circle cx="60" cy="60" r="52"></circle>
+                                <circle cx="60" cy="60" r="52" class="progress"></circle>
+                            </svg>
+                            <span data-ring-value data-live-workout-counter="64">0</span>
+                        </div>
+                        <h3>Live Workout Counter</h3>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard-preview" class="bg-slate-900 py-20">
+            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="text-center" data-aos="fade-up">
+                    <p class="section-overline">Dashboard Preview</p>
+                    <h2 class="font-heading mt-3 text-3xl font-extrabold text-white sm:text-4xl">Interactive Monitoring Experience</h2>
+                </div>
+
+                <div class="mt-12 grid gap-6 lg:grid-cols-3">
+                    <article class="device-card rotate-device" data-aos="zoom-in">
+                        <div class="device-frame">
+                            <div class="mock-header"></div>
+                            <div class="mock-body">
+                                <div class="metric-glow"></div>
+                                <div class="bar-chart">
+                                    <span style="height: 35%"></span>
+                                    <span style="height: 60%"></span>
+                                    <span style="height: 74%"></span>
+                                    <span style="height: 48%"></span>
+                                    <span style="height: 86%"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="device-card floating-ui" data-aos="zoom-in" data-aos-delay="120">
+                        <div class="device-frame mobile">
+                            <div class="mock-header"></div>
+                            <div class="mock-body">
+                                <div class="ui-pill"></div>
+                                <div class="ui-pill short"></div>
+                                <div class="ui-grid">
+                                    <span></span><span></span><span></span><span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="device-card" data-aos="zoom-in" data-aos-delay="220">
+                        <div class="device-frame">
+                            <div class="mock-header"></div>
+                            <div class="mock-body">
+                                <div class="metric-line"></div>
+                                <div class="metric-line"></div>
+                                <div class="metric-line"></div>
+                                <div class="metric-line short"></div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonials" class="bg-slate-950 py-20">
+            <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="text-center" data-aos="fade-up">
+                    <p class="section-overline">Testimonials</p>
+                    <h2 class="font-heading mt-3 text-3xl font-extrabold text-white sm:text-4xl">Trusted By Operations Teams</h2>
+                </div>
+
+                <div id="testimonialSkeletons" class="mt-10 grid gap-5 md:grid-cols-3">
+                    <div class="skeleton-card h-40 rounded-2xl"></div>
+                    <div class="skeleton-card h-40 rounded-2xl"></div>
+                    <div class="skeleton-card h-40 rounded-2xl"></div>
+                </div>
+
+                <div class="swiper testimonial-swiper mt-10 hidden" id="testimonialSwiper" aria-label="Testimonials carousel">
+                    <div class="swiper-wrapper" id="testimonialSlides">
+
+                            <article class="swiper-slide testimonial-card">
+                                <div class="flex items-center gap-3">
+                                    <div class="avatar-wrap">A</div>
+                                    <div>
+                                        <p class="font-semibold text-white">Aisyah, JPJ Officer</p>
+                                        <div class="stars" data-rating="5" aria-label="5 star rating"></div>
+                                    </div>
+                                </div>
+                                <p class="mt-4 text-sm text-slate-300">JPJFit makes session tracking and reporting much faster and easier for our team.</p>
+                                <span class="quote-icon" aria-hidden="true">"</span>
+                            </article>
+
+                    </div>
+                    <div class="hero-pagination testimonial-pagination"></div>
+                </div>
+            </div>
+        </section>
+
+        <section
+            id="faq"
+            class="faq-bg-section py-20"
+        >
+            <div class="faq-bg-fixed-layer" aria-hidden="true"></div>
+            <div class="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
+                <div class="text-center" data-aos="fade-up">
+                    <p class="section-overline">FAQ</p>
+                    <h2 class="font-heading mt-3 text-3xl font-extrabold text-white sm:text-4xl">Questions You Might Ask</h2>
+                </div>
+
+                <div class="mt-8">
+                    <label for="faqSearch" class="sr-only">Search frequently asked questions</label>
+                    <input id="faqSearch" type="search" placeholder="Search FAQs..." class="faq-search" aria-label="Search FAQ list">
+                </div>
+
+                <div class="mt-6 space-y-4" id="faqAccordion">
+
+                        <article class="faq-item" data-faq-item>
+                            <button type="button" class="faq-trigger" aria-expanded="false">
+                                <span>Can JPJFit manage multiple fitness sessions?</span>
+                                <span class="faq-symbol" aria-hidden="true">+</span>
+                            </button>
+                            <div class="faq-panel" hidden>
+                                <p>Yes. You can create and monitor multiple sessions with participant and result records.</p>
+                            </div>
+                        </article>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="cta" class="cta-section relative overflow-hidden py-20">
+            <div class="mx-auto relative z-10 w-full max-w-5xl px-4 text-center sm:px-6 lg:px-8" data-aos="zoom-in">
+                <p class="section-overline text-slate-100">Start Your Digital Transformation</p>
+                <h2 class="font-heading mt-3 text-3xl font-extrabold text-white sm:text-4xl">Ready To Elevate Fitness Monitoring?</h2>
+                <p class="mx-auto mt-4 max-w-2xl text-slate-200">Launch faster reporting cycles, cleaner data collection, and stronger readiness with JPJFit.</p>
+
+                <div class="mt-8 flex flex-wrap justify-center gap-3">
+                    <a href="../auth/login.html" class="btn-secondary border-white/35 bg-white/10 text-white hover:bg-white/20 cta-magnetic" data-ripple>Login Now</a>
+
+                        <a href="../auth/register.html" class="btn-primary cta-magnetic" data-ripple data-text-scramble="Register Today">Register Today</a>
+
+                </div>
+
+                <div class="countdown-inline mt-8" data-offer-countdown="172800">
+                    Offer ends in: <span data-offer-hours>00</span>h <span data-offer-minutes>00</span>m <span data-offer-seconds>00</span>s
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="landing-footer border-t border-slate-700/60 bg-slate-950 py-12">
+        <div class="mx-auto grid w-full max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
+            <div>
+                <p class="font-heading text-xl font-bold text-white">JPJFit</p>
+                <p class="mt-3 text-sm text-slate-300">Energetic, modern and reliable fitness monitoring for public-sector operations.</p>
+                <div class="mt-5 flex items-center gap-3">
+                    <a href="#" class="social-btn" aria-label="Visit Facebook">f</a>
+                    <a href="#" class="social-btn" aria-label="Visit X">x</a>
+                    <a href="#" class="social-btn" aria-label="Visit Instagram">i</a>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="font-heading text-base font-bold text-white">Quick Links</h3>
+                <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                    <li><a class="underline-anim" href="#overview">Overview</a></li>
+                    <li><a class="underline-anim" href="#features">Features</a></li>
+                    <li><a class="underline-anim" href="#workflow">Workflow</a></li>
+                    <li><a class="underline-anim" href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="font-heading text-base font-bold text-white">Support</h3>
+                <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                    <li><a class="underline-anim" href="../auth/login.html">Login</a></li>
+
+                        <li><a class="underline-anim" href="../auth/register.html">Register</a></li>
+
+                    <li><a class="underline-anim" href="#cta">Contact Team</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="font-heading text-base font-bold text-white">Newsletter</h3>
+                <p class="mt-3 text-sm text-slate-300">Get release notes and monitoring updates.</p>
+                <form method="POST" action="../index.html" id="newsletterForm" class="mt-4 space-y-3">
+                    
+                    <label for="newsletterName" class="sr-only">Name</label>
+                    <input id="newsletterName" name="name" type="text" class="newsletter-input" placeholder="Your name">
+                    <label for="newsletterEmail" class="sr-only">Email</label>
+                    <input id="newsletterEmail" name="email" type="email" class="newsletter-input" placeholder="you@example.com" required>
+                    <button type="submit" class="btn-primary w-full justify-center cta-magnetic" data-ripple>Subscribe</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="mx-auto mt-10 flex w-full max-w-7xl flex-col items-center justify-between gap-3 border-t border-slate-800 pt-6 px-4 text-xs text-slate-400 sm:flex-row sm:px-6 lg:px-8">
+            <p>&copy; 2026 JPJFit - Fitness Monitoring System</p>
+            <p>Road Transport Department & Health Monitoring Operations</p>
+        </div>
+    </footer>
+
+    <div id="landingFab" class="landing-fab" aria-label="Quick actions">
+        <button id="goTopBtn" type="button" class="fab-btn hidden" aria-label="Go to top">Top</button>
+        <a href="#cta" class="fab-btn" aria-label="Jump to call to action">CTA</a>
+        <button id="highContrastToggle" type="button" class="fab-btn" aria-label="Toggle high contrast mode">HC</button>
+    </div>
+
+    <dialog id="bmiModal" class="bmi-modal" aria-label="BMI calculator dialog">
+        <form method="dialog" class="bmi-card">
+            <div class="flex items-center justify-between">
+                <h3 class="font-heading text-xl font-bold text-white">BMI Calculator</h3>
+                <button type="submit" class="landing-icon-btn" aria-label="Close BMI calculator">X</button>
+            </div>
+            <div class="mt-5 grid gap-3">
+                <label class="text-sm">Height (cm)
+                    <input id="bmiHeight" type="number" min="100" max="220" value="170" class="newsletter-input mt-1">
+                </label>
+                <label class="text-sm">Weight (kg)
+                    <input id="bmiWeight" type="number" min="30" max="220" value="70" class="newsletter-input mt-1">
+                </label>
+            </div>
+            <button id="calcBmiBtn" type="button" class="btn-primary mt-5 w-full justify-center">Calculate</button>
+            <p id="bmiResult" class="mt-4 text-sm text-slate-200" aria-live="polite">Enter values and calculate your BMI.</p>
+        </form>
+    </dialog>
+
+    <script>
+        window.addEventListener("load", function () {
+            var pageLoader = document.getElementById("pageLoader");
+            if (!pageLoader) {
+                return;
+            }
+
+            pageLoader.classList.add("is-hidden");
+
+            setTimeout(function () {
+                pageLoader.style.display = "none";
+            }, 300);
+        });
+    </script>
+    <script>
+        (function () {
+            function initBeforeAfterSlider() {
+                document.querySelectorAll('[data-before-after]').forEach(function (wrap) {
+                    var after = wrap.querySelector('[data-after]');
+                    var divider = wrap.querySelector('[data-divider]');
+                    var handle = wrap.querySelector('[data-handle]');
+                    var range = wrap.querySelector('[data-range]');
+
+                    if (!after || !divider || !handle || !range) {
+                        return;
+                    }
+
+                    var isDragging = false;
+                    var clamp = function (value, min, max) {
+                        return Math.min(max, Math.max(min, value));
+                    };
+
+                    var setPosition = function (value) {
+                        var percent = clamp(value, 0, 100);
+                        after.style.width = '100%';
+                        wrap.style.setProperty('--comparison-position', percent + '%');
+                        divider.style.left = percent + '%';
+                        range.value = String(percent);
+                        handle.setAttribute('aria-valuenow', String(Math.round(percent)));
+                    };
+
+                    var getPercentFromEvent = function (event) {
+                        var rect = wrap.getBoundingClientRect();
+                        var relative = ((event.clientX - rect.left) / rect.width) * 100;
+                        return clamp(relative, 0, 100);
+                    };
+
+                    var beginDrag = function (event) {
+                        isDragging = true;
+                        wrap.classList.add('is-dragging');
+                        event.preventDefault();
+                        setPosition(getPercentFromEvent(event));
+                    };
+
+                    var moveDrag = function (event) {
+                        if (!isDragging) {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        setPosition(getPercentFromEvent(event));
+                    };
+
+                    var endDrag = function () {
+                        if (!isDragging) {
+                            return;
+                        }
+
+                        isDragging = false;
+                        wrap.classList.remove('is-dragging');
+                    };
+
+                    var initial = Number(wrap.dataset.position || range.value || 50);
+                    setPosition(initial);
+
+                    range.addEventListener('input', function () {
+                        setPosition(Number(range.value));
+                    });
+
+                    handle.addEventListener('keydown', function (event) {
+                        var keyStep = event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : 0;
+                        if (keyStep === 0) {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        setPosition(Number(range.value) + keyStep);
+                    });
+
+                    handle.addEventListener('pointerdown', beginDrag);
+                    wrap.addEventListener('pointerdown', function (event) {
+                        if (event.target === range) {
+                            return;
+                        }
+
+                        beginDrag(event);
+                    });
+
+                    window.addEventListener('pointermove', moveDrag, { passive: false });
+                    window.addEventListener('pointerup', endDrag);
+                    window.addEventListener('pointercancel', endDrag);
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initBeforeAfterSlider);
+            } else {
+                initBeforeAfterSlider();
+            }
+        })();
+    </script>
+    <script>
+        (function () {
+            // Keep hero visible even if jQuery/CDN is unavailable in file mode.
+            var slides = document.querySelectorAll(".hero-swiper .swiper-slide");
+            if (!slides.length) {
+                return;
+            }
+
+            for (var i = 0; i < slides.length; i++) {
+                var bg = slides[i].getAttribute("data-bg");
+                if (bg) {
+                    slides[i].style.backgroundImage = "url('" + bg + "')";
+                }
+            }
+        })();
+    </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script>
+        (function ($) {
+            function initVanillaFallbackSlider() {
+                var slides = document.querySelectorAll(".hero-swiper .swiper-slide");
+                var prevBtn = document.querySelector(".hero-prev");
+                var nextBtn = document.querySelector(".hero-next");
+                var pagination = document.querySelector(".hero-pagination");
+                var index = 0;
+                var timer = null;
+
+                if (!slides.length) {
+                    return;
+                }
+
+                function goToSlide(newIndex) {
+                    index = (newIndex + slides.length) % slides.length;
+                    for (var i = 0; i < slides.length; i++) {
+                        slides[i].classList.remove("jq-active");
+                        slides[i].setAttribute("aria-hidden", "true");
+                    }
+
+                    slides[index].classList.add("jq-active");
+                    slides[index].setAttribute("aria-hidden", "false");
+
+                    if (pagination) {
+                        var dots = pagination.querySelectorAll(".jq-dot");
+                        for (var j = 0; j < dots.length; j++) {
+                            dots[j].classList.remove("is-active");
+                        }
+                        if (dots[index]) {
+                            dots[index].classList.add("is-active");
+                        }
+                    }
+                }
+
+                function restartAuto() {
+                    if (timer) {
+                        clearInterval(timer);
+                    }
+                    timer = setInterval(function () {
+                        goToSlide(index + 1);
+                    }, 5000);
+                }
+
+                if (pagination) {
+                    pagination.innerHTML = "";
+                    for (var d = 0; d < slides.length; d++) {
+                        var dot = document.createElement("button");
+                        dot.type = "button";
+                        dot.className = "jq-dot";
+                        dot.setAttribute("data-slide", String(d));
+                        dot.setAttribute("aria-label", "Go to slide " + (d + 1));
+                        pagination.appendChild(dot);
+                    }
+
+                    pagination.addEventListener("click", function (event) {
+                        var target = event.target;
+                        if (!target || !target.classList.contains("jq-dot")) {
+                            return;
+                        }
+
+                        var slideIndex = parseInt(target.getAttribute("data-slide"), 10);
+                        if (!isNaN(slideIndex)) {
+                            goToSlide(slideIndex);
+                            restartAuto();
+                        }
+                    });
+                }
+
+                if (prevBtn) {
+                    prevBtn.addEventListener("click", function () {
+                        goToSlide(index - 1);
+                        restartAuto();
+                    });
+                }
+
+                if (nextBtn) {
+                    nextBtn.addEventListener("click", function () {
+                        goToSlide(index + 1);
+                        restartAuto();
+                    });
+                }
+
+                goToSlide(0);
+                restartAuto();
+            }
+
+            if (!$) {
+                initVanillaFallbackSlider();
+                return;
+            }
+
+            function initHeroSlider() {
+                var $slides = $(".hero-swiper .swiper-slide");
+                var $pagination = $(".hero-pagination");
+                var $prev = $(".hero-prev");
+                var $next = $(".hero-next");
+                var index = 0;
+                var timer = null;
+
+                if (!$slides.length) {
+                    return;
+                }
+
+                $slides.each(function () {
+                    var $slide = $(this);
+                    var bg = $slide.attr("data-bg");
+                    if (bg) {
+                        $slide.css("background-image", "url('" + bg + "')");
+                    }
+                });
+
+                $pagination.empty();
+                $slides.each(function (slideIndex) {
+                    $pagination.append(
+                        '<button type="button" class="jq-dot" data-slide="' +
+                            slideIndex +
+                            '" aria-label="Go to slide ' +
+                            (slideIndex + 1) +
+                            '"></button>'
+                    );
+                });
+
+                function goToSlide(newIndex) {
+                    index = (newIndex + $slides.length) % $slides.length;
+
+                    $slides.removeClass("jq-active").attr("aria-hidden", "true");
+                    $slides.eq(index).addClass("jq-active").attr("aria-hidden", "false");
+
+                    $pagination.find(".jq-dot").removeClass("is-active");
+                    $pagination.find(".jq-dot").eq(index).addClass("is-active");
+                }
+
+                function restartAuto() {
+                    if (timer) {
+                        clearInterval(timer);
+                    }
+
+                    timer = setInterval(function () {
+                        goToSlide(index + 1);
+                    }, 5000);
+                }
+
+                $prev.off("click.jqSlider").on("click.jqSlider", function () {
+                    goToSlide(index - 1);
+                    restartAuto();
+                });
+
+                $next.off("click.jqSlider").on("click.jqSlider", function () {
+                    goToSlide(index + 1);
+                    restartAuto();
+                });
+
+                $pagination.off("click.jqSlider", ".jq-dot").on("click.jqSlider", ".jq-dot", function () {
+                    var newIndex = parseInt($(this).attr("data-slide"), 10);
+                    if (!isNaN(newIndex)) {
+                        goToSlide(newIndex);
+                        restartAuto();
+                    }
+                });
+
+                goToSlide(0);
+                restartAuto();
+            }
+
+            $(function () {
+                initHeroSlider();
+            });
+        })(window.jQuery);
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" fill="none">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1200" y2="800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#065F46"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="card2" x1="0" y1="0" x2="360" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#115E59"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#bg2)"/>
+  <circle cx="140" cy="680" r="140" fill="#10B981" fill-opacity="0.22"/>
+  <circle cx="1050" cy="130" r="150" fill="#22D3EE" fill-opacity="0.20"/>
+
+  <rect x="120" y="130" width="960" height="540" rx="28" fill="url(#card2)" stroke="#14B8A6"/>
+
+  <text x="170" y="220" fill="#ECFDF5" font-size="44" font-family="Poppins, Arial, sans-serif" font-weight="700">After Training</text>
+  <text x="170" y="268" fill="#A7F3D0" font-size="26" font-family="Inter, Arial, sans-serif">Improved readiness profile</text>
+
+  <rect x="170" y="340" width="260" height="16" rx="8" fill="#A7F3D0"/>
+  <rect x="170" y="390" width="340" height="16" rx="8" fill="#A7F3D0"/>
+  <rect x="170" y="440" width="300" height="16" rx="8" fill="#A7F3D0"/>
+
+  <rect x="640" y="260" width="80" height="300" rx="12" fill="#22D3EE" fill-opacity="0.7"/>
+  <rect x="740" y="220" width="80" height="340" rx="12" fill="#22D3EE" fill-opacity="0.7"/>
+  <rect x="840" y="180" width="80" height="380" rx="12" fill="#22D3EE" fill-opacity="0.7"/>
+
+  <text x="170" y="620" fill="#D1FAE5" font-size="22" font-family="Inter, Arial, sans-serif">JPJFit Local Fallback Image</text>
+</svg>
