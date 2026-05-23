@@ -210,15 +210,23 @@ const initDataTables = () => {
 		table.dataset.datatableInitialized = '1';
 
 		new DataTable(table, {
-			searchable: true,
-			fixedHeight: false,
-			perPage: 10,
-			perPageSelect: [10, 25, 50, 100],
-			labels,
+    	searchable: false,
+    	fixedHeight: false,
+    	perPage: 9999,
+    	perPageSelect: false,
+    	labels,
 		});
-
 		// Defensive cleanup for any literal token text from plugin rendering.
 		const wrapper = table.closest('.datatable-wrapper');
+		const top = wrapper?.querySelector('.datatable-top');
+		if (top) {
+    	top.remove();
+		}
+
+		const bottom = wrapper?.querySelector('.datatable-bottom');
+		if (bottom) {
+    	bottom.remove();
+		}
 		const perPageLabel = wrapper?.querySelector('.datatable-dropdown label');
 		if (perPageLabel) {
 			perPageLabel.innerHTML = perPageLabel.innerHTML.replaceAll('{select}', '').replace(/\s{2,}/g, ' ').trim();

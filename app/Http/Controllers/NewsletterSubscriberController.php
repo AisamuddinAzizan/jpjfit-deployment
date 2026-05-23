@@ -49,6 +49,31 @@ class NewsletterSubscriberController extends Controller
         ]);
     }
 
+    public function getParticipants(TestSession $session)
+{
+    $participantIds = FitnessResult::where(
+        'test_session_id',
+        $session->id
+    )
+    ->distinct()
+    ->pluck('participant_id');
+
+    $participants = Participant::whereIn('id', $participantIds)
+        ->get()
+        ->map(function ($participant) use ($session) {
+
+            return [
+                'id' => $participant->id,
+                'name' => $participant->full_name,
+                'email' => strtolower(trim($participant->email)),
+                'session' => $session->session_code,
+            ];
+        })
+        ->values();
+
+    return response()->json($participants);
+}
+
     public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResponse
     {
         set_time_limit(300);

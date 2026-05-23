@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-                <h1 class="text-2xl font-extrabold text-slate-800">{{ __('Newsletter Subscribers') }}</h1>
+                <h1 class="text-2xl font-extrabold text-slate-800">{{ __('Newsletter') }}</h1>
                 <p class="text-sm text-slate-500">{{ __('Display all subscribers and send email to all or selected recipients.') }}</p>
             </div>
             <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">
@@ -13,7 +13,7 @@
 
     <form method="GET" action="{{ route('newsletter-subscribers.index') }}" class="panel-card p-4">
         <div class="grid gap-3 md:grid-cols-4">
-            <input type="text" name="search" value="{{ $search }}" class="form-input md:col-span-3" placeholder="{{ __('Search by name or email') }}">
+            <input type="text" id="participantSearch" value="{{ $search }}" class="form-input md:col-span-3" placeholder="{{ __('Search by name or email') }}">
             <button class="filter-btn" type="submit">{{ __('Search') }}</button>
         </div>
     </form>
@@ -23,7 +23,7 @@
 
         <section class="panel-card p-5 xl:col-span-2">
             <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-                <h2 class="text-lg font-bold text-slate-800">{{ __('Subscribers List') }}</h2>
+                <h2 class="text-lg font-bold text-slate-800">{{ __('Participant List') }}</h2>
                 <div class="text-sm text-slate-500">
                     {{ __('Selected') }}: <span id="selectedSubscriberCount" class="font-bold text-slate-800">0</span>
                 </div>
@@ -33,36 +33,18 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>
-                                <input id="selectAllSubscribers" type="checkbox" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500">
-                            </th>
+                             <th>No.</th>
                             <th>{{ __('Name') }}</th>
                             <th>{{ __('Email') }}</th>
                             <th>{{ __('Subscribed At') }}</th>
-                        </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="participantTableBody">
                         @php($oldSelectedIds = collect(old('subscriber_ids', []))->map(fn ($id) => (int) $id)->all())
-                        @forelse($subscribers as $subscriber)
-                            <tr>
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        name="subscriber_ids[]"
-                                        value="{{ $subscriber->id }}"
-                                        class="subscriber-checkbox rounded border-slate-300 text-teal-600 focus:ring-teal-500"
-                                        @checked(in_array($subscriber->id, $oldSelectedIds, true))
-                                    >
-                                </td>
-                                <td>{{ $subscriber->name ?: '-' }}</td>
-                                <td>{{ $subscriber->email }}</td>
-                                <td>{{ $subscriber->subscribed_at?->format('d M Y H:i') ?? $subscriber->created_at?->format('d M Y H:i') ?? '-' }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center text-slate-500">{{ __('No subscribers found.') }}</td>
-                            </tr>
-                        @endforelse
+                     <tr>
+                    <td colspan="4" class="text-center text-slate-500">
+                    Select a test session
+                    </td>
+                </tr>
                     </tbody>
                 </table>
             </div>
@@ -99,7 +81,7 @@
         {{ __('Test Session') }}
     </label>
 
-    <select name="test_session_id" class="form-input w-full">
+    <select id="testSessionSelect" name="test_session_id" class="form-input w-full">
         <option value="">Select Test Session</option>
 
         @foreach($sessions as $session)
@@ -132,38 +114,79 @@
             </div>
         </section>
     </form>
-
     <script>
-        (function () {
-            const master = document.getElementById('selectAllSubscribers');
-            const checkboxes = Array.from(document.querySelectorAll('.subscriber-checkbox'));
-            const counter = document.getElementById('selectedSubscriberCount');
 
-            const updateSelectedCounter = () => {
-                const selected = checkboxes.filter((checkbox) => checkbox.checked).length;
-                if (counter) {
-                    counter.textContent = String(selected);
-                }
+document.addEventListener('DOMContentLoaded', function () {
+    let allParticipants = [];
 
-                if (master) {
-                    master.checked = checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
-                }
-            };
+    const sessionSelect = document.getElementById('testSessionSelect');
 
-            if (master) {
-                master.addEventListener('change', () => {
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = master.checked;
-                    });
-                    updateSelectedCounter();
-                });
-            }
+    const tableBody = document.getElementById('participantTableBody');
 
-            checkboxes.forEach((checkbox) => {
-                checkbox.addEventListener('change', updateSelectedCounter);
-            });
+    sessionSelect.addEventListener('change', async function () {
 
-            updateSelectedCounter();
-        }());
-    </script>
+        const sessionId = this.value;
+
+        if (!sessionId) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4">
+                        Select a test session
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        const response = await fetch(
+            `/newsletter/test-session/${sessionId}/participants`
+        );
+
+        const participants = await response.json();
+
+        allParticipants = participants;
+
+        const renderParticipants = (participants) => {
+
+        tableBody.innerHTML = participants.map((participant, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td>${participant.name}</td>
+            <td>${participant.email}</td>
+            <td>${participant.session}</td>
+        </tr>
+    `).join('');
+
+};
+
+renderParticipants(participants);
+const searchInput = document.getElementById('participantSearch');
+
+searchInput.addEventListener('input', function () {
+
+    const keyword = this.value.toLowerCase();
+
+    const filtered = allParticipants.filter(participant => {
+
+        return participant.name.toLowerCase().includes(keyword)
+            || participant.email.toLowerCase().includes(keyword);
+
+    });
+
+    renderParticipants(filtered);
+
+});
+    });
+
+});
+
+</script>
+<style>
+.datatable-top {
+    display: none !important;
+}
+</style>
+
 </x-app-layout>

@@ -56,7 +56,7 @@
                         </a>
                         <a href="{{ route('newsletter-subscribers.index') }}" class="flex items-center gap-2 rounded-xl px-3 py-2 transition hover:bg-white/15 {{ request()->routeIs('newsletter-subscribers.*') ? 'bg-white/20 font-semibold' : '' }}">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10m-7 6h10a2 2 0 002-2V6a2 2 0 00-2-2H7a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                            <span>{{ __('Newsletter Subscribers') }}</span>
+                            <span>{{ __('Newsletter') }}</span>
                         </a>
                     @endif
                     @if(auth()->user()->hasRole('admin'))

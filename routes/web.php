@@ -49,6 +49,10 @@ Route::middleware(['auth', 'audit'])->group(function () {
         Route::put('/mail-settings', [MailSettingsController::class, 'update'])->name('mail-settings.update');
         Route::get('/newsletter-subscribers', [NewsletterSubscriberController::class, 'index'])->name('newsletter-subscribers.index');
         Route::post('/newsletter-subscribers/send-email', [NewsletterSubscriberController::class, 'sendEmail'])->name('newsletter-subscribers.send-email');
+        Route::get('/newsletter/test-session/{session}/participants', [
+        NewsletterSubscriberController::class,
+        'getParticipants'
+        ])->name('newsletter.test-session.participants');
     });
 
     Route::middleware('role:admin|jpj_officer')->group(function () {
