@@ -1,5 +1,5 @@
 @php
-    $user = Auth::user() ?? null;
+    $user = $user ?? null;
     $editing = isset($user);
 @endphp
 <div class="grid gap-4 md:grid-cols-2">
