@@ -25,7 +25,6 @@
                         <th>{{ __('Name') }}</th>
                         <th>{{ __('Email') }}</th>
                         <th>{{ __('Role') }}</th>
-                        <th>{{ __('Status') }}</th>
                         <th class="text-right">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
@@ -35,11 +34,7 @@
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
                             <td>{{ ucwords(str_replace('_', ' ', $user->roles->first()->name ?? __('N/A'))) }}</td>
-                            <td>
-                                <span class="rounded-full px-2 py-1 text-xs font-semibold {{ $user->is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700' }}">
-                                    {{ $user->is_active ? __('Active') : __('Inactive') }}
-                                </span>
-                            </td>
+                          
                             <td class="text-right">
                                 <a href="{{ route('users.show', $user) }}" class="text-sm font-semibold text-sky-700">{{ __('View') }}</a>
                                 <a href="{{ route('users.edit', $user) }}" class="ml-3 text-sm font-semibold text-teal-700">{{ __('Edit') }}</a>
