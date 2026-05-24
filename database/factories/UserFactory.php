@@ -27,7 +27,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'phone' => '01'.fake()->numerify('########'),
-            'department' => fake()->randomElement(['JPJ', 'KKM', 'Pentadbiran']),
+            'department' => 'JPJ Perak',
             'is_active' => true,
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
