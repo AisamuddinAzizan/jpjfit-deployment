@@ -37,15 +37,6 @@
         @error('role') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
     </div>
 
-    <div class="flex items-end">
-        <label class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-            <input type="hidden" name="is_active" value="0">
-            <input type="checkbox" name="is_active" value="1" class="rounded border-slate-300 text-teal-700 focus:ring-teal-500"
-                @checked(old('is_active', $user->is_active ?? true))>
-            {{ __('Active account') }}
-        </label>
-    </div>
-
     <div>
         <label class="text-sm font-medium text-slate-700" for="password">{{ $editing ? __('New Password (optional)') : __('Password') }}</label>
         <input class="form-input" id="password" name="password" type="password" {{ $editing ? '' : 'required' }}>
