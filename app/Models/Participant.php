@@ -58,16 +58,15 @@ class Participant extends Model
     {
         return $this->hasMany(Certificate::class);
     }
-}
-protected static function booted()
-{
+
+    protected static function booted()
+    {
     static::creating(function ($participant) {
 
-        $latest = self::latest('id')->first();
-
-        $number = $latest ? $latest->id + 1 : 1;
+        $number = (self::max('id') ?? 0) + 1;
 
         $participant->participant_no =
             'JPJPRK-'.date('Y').'-'.str_pad($number, 4, '0', STR_PAD_LEFT);
     });
+}
 }
