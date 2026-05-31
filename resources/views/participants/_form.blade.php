@@ -5,11 +5,6 @@
 
 <div class="grid gap-4 md:grid-cols-2">
     <div>
-        <label class="text-sm font-medium text-slate-700">{{ __('Participant No') }}</label>
-        <input class="form-input" name="participant_no" type="text" value="{{ old('participant_no', $participant->participant_no ?? '') }}" required>
-        @error('participant_no') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
-    </div>
-    <div>
         <label class="text-sm font-medium text-slate-700">{{ __('Full Name') }}</label>
         <input class="form-input" name="full_name" type="text" value="{{ old('full_name', $participant->full_name ?? '') }}" required>
         @error('full_name') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
