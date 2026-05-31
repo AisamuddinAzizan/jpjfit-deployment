@@ -56,13 +56,17 @@ class ReportController extends Controller
             ->whereIn('participant_id', $participantIds)
             ->whereNotNull('cholesterol_mmol')
             ->orderBy('participant_id')
-            ->orderBy('created_at')
             ->get();
 
         $cholesterolHistoryByParticipant = $healthRecords
-            ->groupBy('participant_id')
-            ->map(function (Collection $records): array {
-                return $records->map(function (HealthRecord $record): array {
+        ->groupBy('participant_id')
+        ->map(function (Collection $records): array {
+
+        $records = $records->sortBy(function ($record) {
+            return $record->testSession?->session_date ?? $record->created_at;
+        });
+
+        return $records->map(function (HealthRecord $record): array {
                     $meta = $this->cholesterolMeta((float) $record->cholesterol_mmol);
 
                     return [
