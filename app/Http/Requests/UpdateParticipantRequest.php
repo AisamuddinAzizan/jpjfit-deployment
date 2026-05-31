@@ -25,7 +25,7 @@ class UpdateParticipantRequest extends FormRequest
         $participantId = $this->route('participant')?->id;
 
         return [
-            'participant_no' => ['required', 'string', 'max:50', Rule::unique('participants', 'participant_no')->ignore($participantId)],
+            'participant_no' => ['nullable', 'string', 'max:50'],
             'full_name' => ['required', 'string', 'max:255'],
             'ic_no' => ['required', 'string', 'max:30', Rule::unique('participants', 'ic_no')->ignore($participantId)],
             'date_of_birth' => ['nullable', 'date'],
