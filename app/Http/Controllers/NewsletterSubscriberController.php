@@ -164,7 +164,7 @@ class NewsletterSubscriberController extends Controller
              ->values();
             
           }
-            dd(config('mail.default'));
+           
           Log::info('Recipients', [
                 'recipients' => $recipients->pluck('email')->toArray(),
             ]);
