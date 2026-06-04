@@ -31,7 +31,7 @@
         <label class="text-sm font-medium text-slate-700" for="role">{{ __('Role') }}</label>
         <select class="form-select" id="role" name="role" required>
             @foreach($roles as $role)
-                <option value="{{ $role }}" @selected(old('role', $user->roles->first()->name ?? '') === $role)>{{ ucwords(str_replace('_', ' ', $role)) }}</option>
+                <option value="{{ $role }}" @selected(old('role', $editing ? $user->roles->first()?->name : '') === $role)>{{ ucwords(str_replace('_', ' ', $role)) }}</option>
             @endforeach
         </select>
         @error('role') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror

@@ -76,6 +76,7 @@ class NewsletterSubscriberController extends Controller
 
     public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResponse
     {
+       
         set_time_limit(300);
         if (! Schema::hasTable('newsletter_subscribers')) {
             return back()->with('error', 'Newsletter subscriber table is unavailable.')->withInput();
@@ -177,24 +178,37 @@ class NewsletterSubscriberController extends Controller
         $failed = 0;
 
         foreach ($recipients as $recipient) {
-            try {
-                Mail::to($recipient['email'])->send(
-                    new NewsletterBroadcastMail(
-                        (string) $validated['subject'],
-                        (string) $validated['message'],
-                        $recipient['name'],
-                    )
-                );
-                $sent++;
-            } catch (Throwable $exception) {
-                $failed++;
-                Log::error('Failed to send newsletter broadcast email.', [
-                    'subscriber_id' => $recipient['id'],
-                    'subscriber_email' => $recipient['email'],
-                    'error' => $exception->getMessage(),
-                ]);
-            }
-        }
+
+    Log::info('Before Queue', [
+        'email' => $recipient['email']
+    ]);
+
+    try {
+
+        Mail::to($recipient['email'])->queue(
+            new NewsletterBroadcastMail(
+                (string) $validated['subject'],
+                (string) $validated['message'],
+                $recipient['name'],
+            )
+        );
+
+        Log::info('After Queue', [
+            'email' => $recipient['email']
+        ]);
+
+        $sent++;
+
+    } catch (Throwable $exception) {
+
+        $failed++;
+
+        Log::error('Queue Error', [
+            'email' => $recipient['email'],
+            'error' => $exception->getMessage(),
+        ]);
+    }
+}
 
         if ($sent === 0) {
             return back()->with('Error!', 'No email was sent. Please review mail settings and try again.')->withInput();

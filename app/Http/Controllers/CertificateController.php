@@ -212,13 +212,34 @@ class CertificateController extends Controller
     }
 
     public function download(Certificate $certificate)
-    {
-        if (! $certificate->pdf_path || ! Storage::disk('public')->exists($certificate->pdf_path)) {
-            abort(404, 'Certificate file not found.');
-        }
+{
+    if (! $certificate->pdf_path || ! Storage::disk('public')->exists($certificate->pdf_path)) {
 
-        return Storage::disk('public')->download($certificate->pdf_path, $certificate->certificate_no.'.pdf');
+        $fitnessResult = FitnessResult::where([
+            'participant_id' => $certificate->participant_id,
+            'test_session_id' => $certificate->test_session_id,
+        ])->first();
+
+        $pdf = Pdf::loadView('certificates.pdf', [
+            'certificate' => $certificate,
+            'participant' => $certificate->participant,
+            'session' => $certificate->testSession,
+            'fitnessResult' => $fitnessResult,
+        ])->setPaper('a4', 'landscape');
+
+        $fileName = 'certificates/'.$certificate->certificate_no.'.pdf';
+
+        Storage::disk('public')->put($fileName, $pdf->output());
+
+        $certificate->pdf_path = $fileName;
+        $certificate->save();
     }
+
+    return Storage::disk('public')->download(
+        $certificate->pdf_path,
+        $certificate->certificate_no.'.pdf'
+    );
+}
 
     public function preview(Certificate $certificate): BinaryFileResponse
     {
