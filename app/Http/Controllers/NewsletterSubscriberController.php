@@ -1,4 +1,76 @@
-public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResponse
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\SendNewsletterBroadcastRequest;
+use App\Mail\NewsletterBroadcastMail;
+use App\Models\NewsletterSubscriber;
+use App\Models\TestSession;
+use App\Models\Participant;
+use App\Models\FitnessResult;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
+use Throwable;
+
+class NewsletterSubscriberController extends Controller
+{
+    public function index(Request $request): View
+    {
+        $search = trim((string) $request->query('search', ''));
+
+        if (! Schema::hasTable('newsletter_subscribers')) {
+            return view('newsletter-subscribers.index', [
+                'subscribers' => collect(),
+                'search' => $search,
+            ]);
+        }
+
+        $subscribers = NewsletterSubscriber::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->latest('subscribed_at')
+            ->latest('id')
+            ->get();
+
+        $sessions = TestSession::all();
+
+        return view('newsletter-subscribers.index', [
+            'subscribers' => $subscribers,
+            'search' => $search,
+            'sessions' => $sessions,
+        ]);
+    }
+
+    public function getParticipants(TestSession $session)
+    {
+        $participantIds = FitnessResult::where('test_session_id', $session->id)
+            ->distinct()
+            ->pluck('participant_id');
+
+        $participants = Participant::whereIn('id', $participantIds)
+            ->get()
+            ->map(function ($participant) use ($session) {
+                return [
+                    'id' => $participant->id,
+                    'name' => $participant->full_name,
+                    'email' => strtolower(trim($participant->email)),
+                    'session' => $session->session_code,
+                ];
+            })
+            ->values();
+
+        return response()->json($participants);
+    }
+
+    public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResponse
     {
         set_time_limit(300);
         if (! Schema::hasTable('newsletter_subscribers')) {
@@ -36,7 +108,9 @@ public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResp
                     if (empty($participant['email'])) {
                         return false;
                     }
+
                     $email = strtolower(trim($participant['email']));
+
                     if (
                         str_ends_with($email, '@example.com') ||
                         str_ends_with($email, '@example.org') ||
@@ -44,11 +118,11 @@ public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResp
                     ) {
                         return false;
                     }
+
                     return filter_var($participant['email'], FILTER_VALIDATE_EMAIL);
                 })
                 ->unique('email')
                 ->values();
-
         } else {
             $recipients = $recipientQuery
                 ->orderBy('id')
@@ -62,6 +136,7 @@ public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResp
                 })
                 ->filter(function ($subscriber) {
                     $email = $subscriber['email'];
+
                     if (
                         str_ends_with($email, '@example.com') ||
                         str_ends_with($email, '@example.org') ||
@@ -69,10 +144,11 @@ public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResp
                     ) {
                         return false;
                     }
+
                     return filter_var($email, FILTER_VALIDATE_EMAIL);
                 })
-                 ->unique('email')
-                 ->values();
+                ->unique('email')
+                ->values();
         }
             
         Log::info('Recipients', [
@@ -86,11 +162,13 @@ public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResp
         $sent = 0;
         $failed = 0;
 
-        // --- MULA BAHAGIAN DEBUG ---
         foreach ($recipients as $recipient) {
+            Log::info('Before Queue', [
+                'email' => $recipient['email']
+            ]);
+
             try {
-                // KITA TUKAR ->queue() KEPADA ->send() UNTUK DEBUG REAL-TIME RUGI/UNTUNG
-                Mail::to($recipient['email'])->send(
+                Mail::to($recipient['email'])->queue(
                     new NewsletterBroadcastMail(
                         (string) $validated['subject'],
                         (string) $validated['message'],
@@ -98,26 +176,30 @@ public function sendEmail(SendNewsletterBroadcastRequest $request): RedirectResp
                     )
                 );
 
-                $sent++;
+                Log::info('After Queue', [
+                    'email' => $recipient['email']
+                ]);
 
+                $sent++;
             } catch (Throwable $exception) {
                 $failed++;
 
-                // INI AKAN FORCE PRINT RALAT SMTP TERUS KE SKRIN BROWSER ANDA!
-                dd([
-                    'MESEJ RALAT UTAMA' => $exception->getMessage(),
-                    'EMEL PENERIMA' => $recipient['email'],
-                    'FAIL' => $exception->getFile() . ' Line: ' . $exception->getLine(),
-                    'SILA SEMAK' => 'Jika keluar "Authentication accepted", bermakna password betul. Jika "Connection refused", bermakna hos salah.'
+                Log::error('Queue Error', [
+                    'email' => $recipient['email'],
+                    'error' => $exception->getMessage(),
                 ]);
             }
         }
-        // --- TAMAT BAHAGIAN DEBUG ---
 
         if ($sent === 0) {
-            return back()->with('Error!', 'No email was sent. Please review mail settings and try again.')->withInput();
+            return back()->with('error', 'No email was sent. Please review mail settings and try again.')->withInput();
         }
 
         $message = "Newsletter dispatch completed. Sent: {$sent}, Failed: {$failed}.";
+        if (config('mail.default') === 'log') {
+            $message .= ' Email content was written to laravel.log because MAIL_MAILER is set to log.';
+        }
+
         return back()->with('success', $message);
     }
+}
