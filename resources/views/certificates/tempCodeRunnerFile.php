@@ -1,3 +1,4 @@
+<?php
 <!doctype html>
 <html>
 <head>
@@ -349,24 +350,6 @@
             text-transform: uppercase;
             color: #61759d;
         }       
-
-        /* ======================================================= */
-        /* 💡 TAKTIK PAKSA BUANG / SOROK QR CODE DARI SIJIL        */
-        /* ======================================================= */
-        .signature-cell img, 
-        .footer td img,
-        canvas,
-        svg,
-        [class*="qr"], 
-        [id*="qr"] {
-            display: none !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-            width: 0px !important;
-            height: 0px !important;
-        } 
-    </style>
-</head>
     </style>
 </head>
 <body>

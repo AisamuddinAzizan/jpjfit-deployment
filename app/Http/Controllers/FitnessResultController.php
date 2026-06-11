@@ -42,6 +42,36 @@ class FitnessResultController extends Controller
         ]);
     }
 
+    public function sessionParticipants(TestSession $session): View
+{
+    $participants = $session->participants()
+        ->orderBy('full_name')
+        ->get()
+        ->map(function ($participant) use ($session) {
+
+            $result = FitnessResult::where(
+                'participant_id',
+                $participant->id
+            )
+            ->where(
+                'test_session_id',
+                $session->id
+            )
+            ->first();
+
+            return [
+                'participant' => $participant,
+                'result' => $result,
+                'completed' => ! is_null($result),
+            ];
+        });
+
+    return view(
+        'fitness-results.session-participants',
+        compact('session', 'participants')
+    );
+}
+
     /**
      * Show the form for creating a new resource.
      */

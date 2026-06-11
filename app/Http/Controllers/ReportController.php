@@ -18,8 +18,15 @@ class ReportController extends Controller
         $sessionId = $request->integer('test_session_id');
         $search = trim((string) $request->query('search', ''));
 
+        // 🟢 DI SINI KOD SUDAH DISUMBAT PENUTUP YANG SANGAT TEPAT
         $baseQuery = FitnessResult::query()
             ->with(['participant', 'testSession'])
+            ->whereHas('testSession.participants', function ($query) {
+                $query->whereColumn(
+                    'participants.id',
+                    'fitness_results.participant_id'
+                );
+            })
             ->when($sessionId, fn ($query, $id) => $query->where('test_session_id', $id))
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($subQuery) use ($search) {
@@ -59,14 +66,13 @@ class ReportController extends Controller
             ->get();
 
         $cholesterolHistoryByParticipant = $healthRecords
-        ->groupBy('participant_id')
-        ->map(function (Collection $records): array {
+            ->groupBy('participant_id')
+            ->map(function (Collection $records): array {
+                $records = $records->sortBy(function ($record) {
+                    return $record->testSession?->session_date ?? $record->created_at;
+                });
 
-        $records = $records->sortBy(function ($record) {
-            return $record->testSession?->session_date ?? $record->created_at;
-        });
-
-        return $records->map(function (HealthRecord $record): array {
+                return $records->map(function (HealthRecord $record): array {
                     $meta = $this->cholesterolMeta((float) $record->cholesterol_mmol);
 
                     return [
@@ -132,75 +138,19 @@ class ReportController extends Controller
         return ['level' => 'Poor', 'color' => '#dc2626'];
     }
 
-    public function exportCsv(Request $request): StreamedResponse
-    {
-        $sessionId = $request->integer('test_session_id');
-        $search = trim((string) $request->query('search', ''));
-
-        $results = FitnessResult::query()
-            ->with(['participant', 'testSession'])
-            ->when($sessionId, fn ($query, $id) => $query->where('test_session_id', $id))
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($subQuery) use ($search) {
-                    $subQuery->whereHas('participant', function ($participantQuery) use ($search) {
-                        $participantQuery->where('full_name', 'like', "%{$search}%")
-                            ->orWhere('participant_no', 'like', "%{$search}%");
-                    })->orWhereHas('testSession', function ($sessionQuery) use ($search) {
-                        $sessionQuery->where('session_code', 'like', "%{$search}%")
-                            ->orWhere('title', 'like', "%{$search}%");
-                    });
-                });
-            })
-            ->latest()
-            ->get();
-
-        return response()->streamDownload(function () use ($results): void {
-            $handle = fopen('php://output', 'w');
-
-            fputcsv($handle, [
-                'Participant No',
-                'Name',
-                'Session Code',
-                'Push Ups',
-                'Sit Ups',
-                'Sit and Reach (cm)',
-                'Shuttle Run',
-                '2.4km (seconds)',
-                'Total Score',
-                'Classification',
-                'Result',
-            ]);
-
-            foreach ($results as $result) {
-                fputcsv($handle, [
-                    $result->participant?->participant_no,
-                    $result->participant?->full_name,
-                    $result->testSession?->session_code,
-                    $result->push_ups,
-                    $result->sit_ups,
-                    $result->sit_and_reach_cm,
-                    $result->shuttle_run_level,
-                    $result->run_2_4km_seconds,
-                    $result->total_score,
-                    $result->classification,
-                    $result->result_status,
-                ]);
-            }
-
-            fclose($handle);
-        }, 'fitness-report-'.now()->format('YmdHis').'.csv');
-    }
-
     public function exportPdf(Request $request)
     {
         $sessionId = $request->integer('test_session_id');
         $search = trim((string) $request->query('search', ''));
 
+        // 1. Ambil data Fitness Result dengan kueri yang bersih
         $results = FitnessResult::query()
             ->with(['participant', 'testSession'])
-            ->when($sessionId, fn ($query, $id) => $query->where('test_session_id', $id))
+            ->when($sessionId, function ($query) use ($sessionId) {
+                return $query->where('test_session_id', $sessionId);
+            })
             ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($subQuery) use ($search) {
+                return $query->where(function ($subQuery) use ($search) {
                     $subQuery->whereHas('participant', function ($participantQuery) use ($search) {
                         $participantQuery->where('full_name', 'like', "%{$search}%")
                             ->orWhere('participant_no', 'like', "%{$search}%");
@@ -213,11 +163,26 @@ class ReportController extends Controller
             ->latest()
             ->get();
 
+        // 2. Ekstrak ID Peserta & ID Sesi
+        $participantIds = $results->pluck('participant_id')->filter()->unique()->values()->all();
+        $sessionIds = $results->pluck('test_session_id')->filter()->unique()->values()->all();
+
+        // 3. Tarik data Health Record yang sepadan
+        $healthRecords = HealthRecord::query()
+            ->whereIn('participant_id', $participantIds)
+            ->whereIn('test_session_id', $sessionIds)
+            ->get()
+            ->keyBy(function (HealthRecord $record) {
+                return $record->participant_id . '-' . $record->test_session_id;
+            });
+
+        // 4. Hantar data ke template Blade
         $pdf = Pdf::loadView('reports.fitness-pdf', [
             'results' => $results,
+            'healthRecords' => $healthRecords,
             'generatedAt' => now(),
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->download('fitness-report-'.now()->format('YmdHis').'.pdf');
+        return $pdf->download('fitness-health-report-'.now()->format('YmdHis').'.pdf');
     }
 }
